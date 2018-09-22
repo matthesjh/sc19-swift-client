@@ -1,6 +1,8 @@
 # Swift client for the Software-Challenge Germany 2018/2019
 
-This package contains a simple client written in the [Swift Programming Language](https://swift.org/) for the [Software-Challenge Germany](https://www.software-challenge.de/) 2018/2019.
+This package contains a simple client written in [Swift](https://swift.org/) for the [Software-Challenge Germany](https://www.software-challenge.de/) 2018/2019.
+
+:warning: The package is currently in an early stage of development and therefore not intended for use. :warning:
 
 ## Usage
 
