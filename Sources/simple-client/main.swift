@@ -31,7 +31,7 @@ func printUsageMessage() {
         """)
 }
 
-/// Exits the program with the given error mesage.
+/// Exits the program with the given error message.
 ///
 /// - Parameter error: The error message to print into the standard output.
 func exitWith(error: String) {
