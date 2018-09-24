@@ -12,6 +12,11 @@ enum SCPlayerColor: String, CustomStringConvertible {
         return self == .red ? .blue : .red
     }
 
+    /// Switches the color to the color of the opponent player.
+    mutating func switchColor() {
+        self = self.opponentColor()
+    }
+
     var description: String {
         return self.rawValue
     }
