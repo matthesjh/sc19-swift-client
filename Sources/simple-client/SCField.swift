@@ -9,24 +9,15 @@ struct SCField {
     var state: SCFieldState
 
     /// Creates a new field with the given x- and y-coordinate and the given
-    /// field state.
+    /// field state. If no state is provided an empty field is created.
     ///
     /// - Parameters:
     ///   - x: The x-coordinate of the field.
     ///   - y: The y-coordinate of the field.
     ///   - state: The state of the field.
-    init(x: Int, y: Int, state: SCFieldState) {
+    init(x: Int, y: Int, state: SCFieldState = .empty) {
         self.x = x
         self.y = y
         self.state = state
-    }
-
-    /// Creates an empty field with the given x- and y-coordinate.
-    ///
-    /// - Parameters:
-    ///   - x: The x-coordinate of the field.
-    ///   - y: The y-coordinate of the field.
-    init(x: Int, y: Int) {
-        self.init(x: x, y: y, state: .empty)
     }
 }
