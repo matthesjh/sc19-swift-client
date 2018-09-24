@@ -10,6 +10,7 @@ protocol SCGameHandlerDelegate {
 
     /// Sent by the game handler when a move is requested by the game server.
     ///
-    /// - Returns: The move sent to the game server.
-    func onMoveRequested() -> SCMove
+    /// - Returns: The move sent to the game server. If `nil` is returned
+    ///   nothing is sent to the game server.
+    func onMoveRequested() -> SCMove?
 }
