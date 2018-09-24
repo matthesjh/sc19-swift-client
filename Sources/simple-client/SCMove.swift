@@ -13,9 +13,10 @@ struct SCMove {
     /// Creates a new move for the piranha with the given x- and y-coordinate
     /// and the given direction.
     ///
-    /// - Parameter x: The x-coordinate of the piranha.
-    /// - Parameter y: The y-coordinate of the piranha.
-    /// - Parameter direction: The direction of the move.
+    /// - Parameters:
+    ///   - x: The x-coordinate of the piranha.
+    ///   - y: The y-coordinate of the piranha.
+    ///   - direction: The direction of the move.
     init(x: Int, y: Int, direction: SCDirection) {
         self.x = x
         self.y = y
