@@ -19,7 +19,7 @@ var reservation = ""
 var strategy = ""
 
 /// Prints the help message into the standard output.
-func printUsageMessage() {
+func printHelpMessage() {
     print("""
         Usage: simple-client [options]
           -h, --host:
@@ -38,12 +38,12 @@ func printUsageMessage() {
 /// Exits the program with the given error message.
 ///
 /// - Parameter error: The error message to print into the standard output.
-func exitWith(error: String) {
+func exit(withError error: String) {
     if !error.isEmpty {
         print("ERROR: \(error)")
     }
 
-    printUsageMessage()
+    printHelpMessage()
     exit(EXIT_FAILURE)
 }
 
@@ -58,7 +58,7 @@ while i < argc {
     let arg = argv[i]
 
     if arg == "--help" {
-        printUsageMessage()
+        printHelpMessage()
         exit(EXIT_SUCCESS)
     } else if arg.hasPrefix("-") {
         i += 1
@@ -73,17 +73,17 @@ while i < argc {
                     if let portValue = UInt16(argValue) {
                         port = portValue
                     } else {
-                        exitWith(error: "The value \"\(argValue)\" can not be converted to a port number!")
+                        exit(withError: "The value \"\(argValue)\" can not be converted to a port number!")
                     }
                 case "-r", "--reservation":
                     reservation = argValue
                 case "-s", "--strategy":
                     strategy = argValue
                 default:
-                    exitWith(error: "Unrecognized option \"\(arg)\"!")
+                    exit(withError: "Unrecognized option \"\(arg)\"!")
             }
         } else {
-            exitWith(error: "Missing value for the option \"\(arg)\"!")
+            exit(withError: "Missing value for the option \"\(arg)\"!")
         }
     }
 
