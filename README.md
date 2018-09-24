@@ -32,6 +32,8 @@ Usage: simple-client [options]
       The port used for the connection (default: 13050).
   -r, --reservation:
       The reservation code to join a prepared game.
+  -s, --strategy:
+      The strategy used for the game.
   --help:
       Print this help message.
 ```

@@ -15,6 +15,8 @@ var host = defaultHost
 var port = defaultPort
 /// The reservation code to join a prepared game.
 var reservation = ""
+/// The strategy used for the game.
+var strategy = ""
 
 /// Prints the help message into the standard output.
 func printUsageMessage() {
@@ -26,6 +28,8 @@ func printUsageMessage() {
               The port used for the connection (default: \(defaultPort)).
           -r, --reservation:
               The reservation code to join a prepared game.
+          -s, --strategy:
+              The strategy used for the game.
           --help:
               Print this help message.
         """)
@@ -73,6 +77,8 @@ while i < argc {
                     }
                 case "-r", "--reservation":
                     reservation = argValue
+                case "-s", "--strategy":
+                    strategy = argValue
                 default:
                     exitWith(error: "Unrecognized option \"\(arg)\"!")
             }
@@ -91,3 +97,4 @@ if host.isEmpty || host == "localhost" {
 print("HOST: \(host)")
 print("PORT: \(port)")
 print("RESERVATION: \(reservation)")
+print("STRATEGY: \(strategy)")
