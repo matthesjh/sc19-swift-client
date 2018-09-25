@@ -1,5 +1,5 @@
-/// A field on the game board. It consists of an x- and y-coordinate and a
-/// field state.
+/// A field on the game board. It consists of an x- and y-coordinate and a field
+/// state.
 struct SCField {
     /// The x-coordinate of the field.
     let x: Int
@@ -19,5 +19,17 @@ struct SCField {
         self.x = x
         self.y = y
         self.state = state
+    }
+
+    /// Returns a boolean value indicating whether the field is covered by a red
+    /// or blue piranha.
+    ///
+    /// - Returns: `true` if the field is covered by a red or blue piranha;
+    ///   otherwise, `false`.
+    func hasPiranha() -> Bool {
+        if self.state == .red || self.state == .blue {
+            return true
+        }
+        return false
     }
 }
