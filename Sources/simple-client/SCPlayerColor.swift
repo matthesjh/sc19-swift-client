@@ -5,19 +5,22 @@ enum SCPlayerColor: String, CaseIterable, CustomStringConvertible {
     /// The color of the blue player.
     case blue = "BLUE"
 
-    /// Returns the color of the opponent player.
-    ///
-    /// - Returns: The color of the opponent player.
-    func opponentColor() -> SCPlayerColor {
-        return self == .red ? .blue : .red
-    }
-
     /// Switches the color to the color of the opponent player.
     mutating func switchColor() {
-        self = self.opponentColor()
+        self = self.opponentColor
     }
 
     var description: String {
         return self.rawValue
+    }
+
+    /// The color of the opponent player.
+    var opponentColor: SCPlayerColor {
+        return self == .red ? .blue : .red
+    }
+
+    /// The corresponding field state for the player color.
+    var fieldState: SCFieldState {
+        return self == .red ? .red : .blue
     }
 }
