@@ -1,5 +1,5 @@
 /// The state of a field.
-enum SCFieldState: String, CustomStringConvertible {
+enum SCFieldState: String, CaseIterable, CustomStringConvertible {
     /// The field is covered with a red piranha.
     case red = "RED"
     /// The field is covered with a blue piranha.

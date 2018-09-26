@@ -1,5 +1,5 @@
 /// The direction of a move.
-enum SCDirection: String, CustomStringConvertible {
+enum SCDirection: String, CaseIterable, CustomStringConvertible {
     /// Move to north.
     case up = "UP"
     /// Move to northeast.

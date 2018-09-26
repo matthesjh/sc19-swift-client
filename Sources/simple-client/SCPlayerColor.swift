@@ -1,5 +1,5 @@
 /// The possible colors of a player.
-enum SCPlayerColor: String, CustomStringConvertible {
+enum SCPlayerColor: String, CaseIterable, CustomStringConvertible {
     /// The color of the red player.
     case red = "RED"
     /// The color of the blue player.
