@@ -4,6 +4,8 @@ import Darwin
 import Glibc
 #endif
 
+import Socket
+
 /// The default IP address of the host to connect to.
 let defaultHost = "127.0.0.1"
 /// The default port used for the connection.
@@ -94,7 +96,19 @@ if host.isEmpty || host == "localhost" {
     host = defaultHost
 }
 
-print("HOST: \(host)")
-print("PORT: \(port)")
-print("RESERVATION: \(reservation)")
-print("STRATEGY: \(strategy)")
+// Create a socket.
+if let socket = try? Socket.create() {
+    do {
+        // Connect to the game server.
+        try socket.connect(to: host, port: Int32(port))
+
+        // Handle the game and the communication with the game server.
+        let gameHandler = SCGameHandler(socket: socket, reservation: reservation, strategy: strategy)
+        gameHandler.handleGame()
+    } catch {
+        print(error)
+    }
+
+    // Close the socket and the connection with the game server.
+    socket.close()
+}

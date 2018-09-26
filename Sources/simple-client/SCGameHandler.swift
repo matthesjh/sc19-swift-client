@@ -1,3 +1,5 @@
+import Socket
+
 /// The protocol which must be implemented by a game logic.
 protocol SCGameHandlerDelegate {
     /// Sent by the game handler when the game has been ended.
@@ -13,4 +15,20 @@ protocol SCGameHandlerDelegate {
     /// - Returns: The move sent to the game server or `nil` if no move should
     ///   be sent to the game server.
     func onMoveRequested() -> SCMove?
+}
+
+class SCGameHandler {
+    let socket: Socket
+    let strategy: String
+    let reservation: String
+
+    init(socket: Socket, reservation: String, strategy: String) {
+        self.socket = socket
+        self.strategy = strategy
+        self.reservation = reservation
+    }
+
+    func handleGame() {
+
+    }
 }
