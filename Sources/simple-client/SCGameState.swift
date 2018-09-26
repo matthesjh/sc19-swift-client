@@ -356,7 +356,8 @@ class SCGameState {
                             }
                         }
 
-                        if destField.state == .obstructed || destField.state == self.currentPlayer.fieldState {
+                        if destField.state == .obstructed
+                               || destField.state == self.currentPlayer.fieldState {
                             continue dirLoop
                         }
 
@@ -367,5 +368,48 @@ class SCGameState {
         }
 
         return moves
+    }
+
+    /// Performs the given move on the game board.
+    ///
+    /// - Returns: `true` if the move can be performed; otherwise, `false`.
+    func performMove(move: SCMove) -> Bool {
+        let x = move.x
+        let y = move.y
+
+        if self.turn >= SCConstants.turnLimit
+               || x < 0
+               || x >= SCConstants.boardSize
+               || y < 0
+               || y >= SCConstants.boardSize
+               || self.board[x][y].state != self.currentPlayer.fieldState {
+            return false
+        }
+
+        let distance = self.distance(forMove: move)
+        if distance > 0 {
+            if let destField = self.destination(forMove: move, withDistance: distance) {
+                for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
+                    if f.state == self.currentPlayer.opponentColor.fieldState {
+                        return false
+                    }
+                }
+
+                if destField.state == .obstructed
+                       || destField.state == self.currentPlayer.fieldState {
+                    return false
+                }
+
+                self.board[x][y].state = .empty
+                self.board[destField.x][destField.y].state = self.currentPlayer.fieldState
+                self.turn += 1
+                self.currentPlayer.switchColor()
+                self.lastMove = move
+
+                return true
+            }
+        }
+
+        return false
     }
 }
