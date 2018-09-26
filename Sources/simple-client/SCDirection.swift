@@ -20,4 +20,26 @@ enum SCDirection: String, CaseIterable, CustomStringConvertible {
     var description: String {
         return self.rawValue
     }
+
+    /// The two-dimensional vector describing the direction.
+    var vector: (vx: Int, vy: Int) {
+        switch self {
+            case .up:
+                return (0, 1)
+            case .upRight:
+                return (1, 1)
+            case .right:
+                return (1, 0)
+            case .downRight:
+                return (1, -1)
+            case .down:
+                return (0, -1)
+            case .downLeft:
+                return (-1, -1)
+            case .left:
+                return (-1, 0)
+            case .upLeft:
+                return (-1, 1)
+        }
+    }
 }
