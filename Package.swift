@@ -4,11 +4,9 @@ import PackageDescription
 
 let package = Package(
     name: "sc19-swift-client",
-    dependencies: [
-        .package(url: "https://github.com/IBM-Swift/BlueSocket.git", from: "1.0.17")
-    ],
+    dependencies: [],
     targets: [
-        .target(name: "simple-client", dependencies: ["Socket"])
+        .target(name: "simple-client", dependencies: [])
     ],
     swiftLanguageVersions: [.v4_2]
 )
