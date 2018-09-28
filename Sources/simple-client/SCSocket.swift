@@ -6,7 +6,7 @@ import Glibc
 
 import Foundation
 
-public extension fd_set {
+extension fd_set {
     /// Clears the set.
     ///
     /// - Remark: Replacement for the `FD_ZERO` macro.
@@ -204,12 +204,10 @@ class SCSocket {
     ///
     /// - Parameter message: The message that should be sent to the host.
     func send(message: String) {
-        // Check whether the message is valid.
-        if !message.isEmpty, let data = message.data(using: .utf8) {
-            data.withUnsafeBytes() { [unowned self] (buffer: UnsafePointer<UInt8>) in
+        if !message.isEmpty {
+            message.withCString { bytes in
                 // The length of the message.
                 let length = message.count
-
                 // The length of the message that is already sent to the host.
                 var sentLength = 0
 
@@ -220,9 +218,9 @@ class SCSocket {
                 while sentLength < length {
                     // Send the message to the host.
                     #if os(macOS)
-                    retVal = Darwin.send(self.socketfd, buffer.advanced(by: sentLength), length - sentLength, 0)
+                    retVal = Darwin.send(self.socketfd, bytes.advanced(by: sentLength), length - sentLength, 0)
                     #elseif os(Linux)
-                    retVal = Glibc.send(self.socketfd, buffer.advanced(by: sentLength), length - sentLength, 0)
+                    retVal = Glibc.send(self.socketfd, bytes.advanced(by: sentLength), length - sentLength, 0)
                     #endif
 
                     // Check whether an error occurred or nothing has been sent.
