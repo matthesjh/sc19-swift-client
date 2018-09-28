@@ -1,5 +1,3 @@
-import Socket
-
 /// The protocol which must be implemented by a game logic.
 protocol SCGameHandlerDelegate {
     /// Sent by the game handler when the game has been ended.
@@ -18,11 +16,11 @@ protocol SCGameHandlerDelegate {
 }
 
 class SCGameHandler {
-    let socket: Socket
+    let socket: SCSocket
     let strategy: String
     let reservation: String
 
-    init(socket: Socket, reservation: String, strategy: String) {
+    init(socket: SCSocket, reservation: String, strategy: String) {
         self.socket = socket
         self.strategy = strategy
         self.reservation = reservation
