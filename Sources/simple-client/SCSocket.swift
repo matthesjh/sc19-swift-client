@@ -134,7 +134,11 @@ class SCSocket {
         self.close()
 
         // Create a new socket.
+        #if os(macOS)
         self.socketfd = socket(AF_INET, SOCK_STREAM, 0)
+        #elseif os(Linux)
+        self.socketfd = socket(AF_INET, Int32(SOCK_STREAM.rawValue), 0)
+        #endif
 
         // Check whether the newly created socket is invalid.
         if self.socketfd == SCSocket.invalidSocket {
