@@ -86,7 +86,7 @@ class SCGameHandler: NSObject, XMLParserDelegate {
             // Parse the received XML document.
             let parser = XMLParser(data: data)
             parser.delegate = self
-            parser.parse()
+            _ = parser.parse()
         }
     }
 
