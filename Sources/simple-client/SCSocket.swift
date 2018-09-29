@@ -7,11 +7,34 @@ import Glibc
 import Foundation
 
 extension fd_set {
+    #if os(macOS)
+    private static let __fd_set_count = Int(__DARWIN_FD_SETSIZE) / 32
+    #elseif os(Linux)
+    #if arch(arm)
+    private static let __fd_set_count = 16
+    #else
+    private static let __fd_set_count = 32
+    #endif
+    #endif
+
+    @inline(__always)
+    private mutating func withCArray<T>(block: (UnsafeMutablePointer<Int32>) throws -> T) rethrows -> T {
+        #if os(macOS)
+        return try withUnsafeMutablePointer(to: &fds_bits) {
+            try block(UnsafeMutableRawPointer($0).assumingMemoryBound(to: Int32.self))
+        }
+        #elseif os(Linux)
+        return try withUnsafeMutablePointer(to: &__fds_bits) {
+            try block(UnsafeMutableRawPointer($0).assumingMemoryBound(to: Int32.self))
+        }
+        #endif
+    }
+
     /// Clears the set.
     ///
     /// - Remark: Replacement for the `FD_ZERO` macro.
     mutating func zero() {
-        self.fds_bits = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        self.withCArray { $0.initialize(repeating: 0, count: fd_set.__fd_set_count) }
     }
 
     /// Add the given file descriptor to the set.
@@ -23,42 +46,7 @@ extension fd_set {
         let intOffset = Int(fd) / 32
         let bitOffset = Int(fd) % 32
         let mask = Int32(bitPattern: UInt32(1 << bitOffset))
-
-        switch intOffset {
-            case 0: self.fds_bits.0 |= mask
-            case 1: self.fds_bits.1 |= mask
-            case 2: self.fds_bits.2 |= mask
-            case 3: self.fds_bits.3 |= mask
-            case 4: self.fds_bits.4 |= mask
-            case 5: self.fds_bits.5 |= mask
-            case 6: self.fds_bits.6 |= mask
-            case 7: self.fds_bits.7 |= mask
-            case 8: self.fds_bits.8 |= mask
-            case 9: self.fds_bits.9 |= mask
-            case 10: self.fds_bits.10 |= mask
-            case 11: self.fds_bits.11 |= mask
-            case 12: self.fds_bits.12 |= mask
-            case 13: self.fds_bits.13 |= mask
-            case 14: self.fds_bits.14 |= mask
-            case 15: self.fds_bits.15 |= mask
-            case 16: self.fds_bits.16 |= mask
-            case 17: self.fds_bits.17 |= mask
-            case 18: self.fds_bits.18 |= mask
-            case 19: self.fds_bits.19 |= mask
-            case 20: self.fds_bits.20 |= mask
-            case 21: self.fds_bits.21 |= mask
-            case 22: self.fds_bits.22 |= mask
-            case 23: self.fds_bits.23 |= mask
-            case 24: self.fds_bits.24 |= mask
-            case 25: self.fds_bits.25 |= mask
-            case 26: self.fds_bits.26 |= mask
-            case 27: self.fds_bits.27 |= mask
-            case 28: self.fds_bits.28 |= mask
-            case 29: self.fds_bits.29 |= mask
-            case 30: self.fds_bits.30 |= mask
-            case 31: self.fds_bits.31 |= mask
-            default: break
-        }
+        self.withCArray { $0[intOffset] |= mask }
     }
 }
 
