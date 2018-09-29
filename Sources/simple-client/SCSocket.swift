@@ -186,25 +186,27 @@ class SCSocket {
     ///
     /// - Parameter data: The buffer to return the data in.
     func receive(into data: inout Data) {
-        // Loop until we have received the whole message.
-        repeat {
-            // Add the received part of the message to the internal buffer.
-            let length = recv(self.socketfd, &self.readBuffer, SCSocket.bufferSize, 0)
+        if self.socketfd != SCSocket.invalidSocket {
+            // Loop until we have received the whole message.
+            repeat {
+                // Add the received part of the message to the internal buffer.
+                let length = recv(self.socketfd, &self.readBuffer, SCSocket.bufferSize, 0)
 
-            // Check whether the message is not empty.
-            if length > 0 {
-                data.append(&self.readBuffer, count: length)
-            } else {
-                break
-            }
-        } while self.readable
+                // Check whether the message is not empty.
+                if length > 0 {
+                    data.append(&self.readBuffer, count: length)
+                } else {
+                    break
+                }
+            } while self.readable
+        }
     }
 
     /// Sends the given message to the host.
     ///
     /// - Parameter message: The message that should be sent to the host.
     func send(message: String) {
-        if !message.isEmpty {
+        if self.socketfd != SCSocket.invalidSocket && !message.isEmpty {
             message.withCString { bytes in
                 // The length of the message.
                 let length = message.count
