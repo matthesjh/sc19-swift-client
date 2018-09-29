@@ -189,11 +189,11 @@ class SCSocket {
         // Loop until we have received the whole message.
         repeat {
             // Add the received part of the message to the internal buffer.
-            let length = recv(self.socketfd, &self.readBuffer[0], SCSocket.bufferSize, 0)
+            let length = recv(self.socketfd, &self.readBuffer, SCSocket.bufferSize, 0)
 
             // Check whether the message is not empty.
             if length > 0 {
-                data.append(Data(bytes: self.readBuffer[0..<length]))
+                data.append(&self.readBuffer, count: length)
             } else {
                 break
             }
