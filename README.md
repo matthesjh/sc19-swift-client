@@ -1,7 +1,5 @@
 # Swift client for Software-Challenge Germany 2018/2019
 
-:warning: This package is currently in an early stage of development and therefore not intended for use. :warning:
-
 This package contains a simple client written in [Swift](https://swift.org/) for [Software-Challenge Germany](https://www.software-challenge.de/) 2018/2019.
 
 The game of the contest year 2018/2019 is called *Piranhas*. It is played on a board with 10x10 fields. The goal of the game is to unite his piranhas to a single swarm. The complete documentation of the game rules and the XML communication with the game server can be found [here](https://cau-kiel-tech-inf.github.io/socha-enduser-docs/).
