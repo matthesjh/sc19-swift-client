@@ -29,6 +29,9 @@ class SCGameLogic: SCGameHandlerDelegate {
 
     func onMoveRequested() -> SCMove? {
         print("*** A move is requested by the game server!")
+
+        // TODO: Add your own logic here.
+
         return self.gameState.possibleMoves().randomElement()
     }
 }
