@@ -27,9 +27,6 @@ struct SCField {
     /// - Returns: `true` if the field is covered by a red or blue piranha;
     ///   otherwise, `false`.
     func hasPiranha() -> Bool {
-        if self.state == .red || self.state == .blue {
-            return true
-        }
-        return false
+        return self.state == .red || self.state == .blue
     }
 }
