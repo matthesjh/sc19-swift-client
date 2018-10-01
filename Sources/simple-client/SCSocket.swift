@@ -8,24 +8,29 @@ import Foundation
 
 extension fd_set {
     #if os(macOS)
-    private static let __fd_set_count = Int(__DARWIN_FD_SETSIZE) / 32
+    /// The maximum number of file descriptors in `fd_set`.
+    private static let setSize = Int(__DARWIN_FD_SETSIZE) / 32
     #elseif os(Linux)
-    #if arch(arm)
-    private static let __fd_set_count = 16
-    #else
-    private static let __fd_set_count = 32
-    #endif
+    /// The maximum number of file descriptors in `fd_set`.
+    private static let setSize = Int(__FD_SETSIZE) / 32
     #endif
 
+    /// Calls the given closure with a mutable pointer to the underlying set.
+    ///
+    /// - Parameter body: A closure that takes a mutable pointer to the
+    ///   underlying set as its sole argument. If the closure has a return
+    ///   value, that value is also used as the return value of the
+    ///   `withCArray(_:)` function. The pointer argument is valid only for the
+    ///   duration of the function's execution.
     @inline(__always)
-    private mutating func withCArray<T>(block: (UnsafeMutablePointer<Int32>) throws -> T) rethrows -> T {
+    private mutating func withCArray<T>(_ body: (UnsafeMutablePointer<Int32>) throws -> T) rethrows -> T {
         #if os(macOS)
         return try withUnsafeMutablePointer(to: &fds_bits) {
-            try block(UnsafeMutableRawPointer($0).assumingMemoryBound(to: Int32.self))
+            try body(UnsafeMutableRawPointer($0).assumingMemoryBound(to: Int32.self))
         }
         #elseif os(Linux)
         return try withUnsafeMutablePointer(to: &__fds_bits) {
-            try block(UnsafeMutableRawPointer($0).assumingMemoryBound(to: Int32.self))
+            try body(UnsafeMutableRawPointer($0).assumingMemoryBound(to: Int32.self))
         }
         #endif
     }
@@ -34,10 +39,10 @@ extension fd_set {
     ///
     /// - Remark: Replacement for the `FD_ZERO` macro.
     mutating func zero() {
-        self.withCArray { $0.initialize(repeating: 0, count: fd_set.__fd_set_count) }
+        self.withCArray { $0.initialize(repeating: 0, count: fd_set.setSize) }
     }
 
-    /// Add the given file descriptor to the set.
+    /// Adds the given file descriptor to the set.
     ///
     /// - Remark: Replacement for the `FD_SET` macro.
     ///
@@ -45,8 +50,7 @@ extension fd_set {
     mutating func set(_ fd: Int32) {
         let intOffset = Int(fd) / 32
         let bitOffset = Int(fd) % 32
-        let mask = Int32(bitPattern: UInt32(1 << bitOffset))
-        self.withCArray { $0[intOffset] |= mask }
+        self.withCArray { $0[intOffset] |= Int32(bitPattern: 1 << bitOffset) }
     }
 }
 
@@ -76,12 +80,8 @@ class SCSocket {
         readSet.zero()
         readSet.set(self.socketfd)
 
-        // Check whether the socket is not readable.
-        if (select(self.socketfd + 1, &readSet, nil, nil, &timeout) <= 0) {
-            return false
-        }
-
-        return true
+        // Check whether the socket is readable.
+        return select(self.socketfd + 1, &readSet, nil, nil, &timeout) > 0
     }
 
     // MARK: - Initializers
@@ -105,11 +105,10 @@ class SCSocket {
     func close() {
         // Check whether the socket is valid.
         if self.socketfd != SCSocket.invalidSocket {
-            var retVal = SCSocket.socketError
             #if os(macOS)
-            retVal = Darwin.close(self.socketfd)
+            let retVal = Darwin.close(self.socketfd)
             #elseif os(Linux)
-            retVal = Glibc.close(self.socketfd)
+            let retVal = Glibc.close(self.socketfd)
             #endif
 
             // Check whether an error occurred while closing the socket.
@@ -150,15 +149,15 @@ class SCSocket {
         var socketAddress = sockaddr_in()
         socketAddress.sin_family = sa_family_t(AF_INET)
         socketAddress.sin_addr = in_addr(s_addr: inet_addr(host))
-        socketAddress.sin_port = in_port_t((port << 8) + (port >> 8))
+        socketAddress.sin_port = port.bigEndian
 
         // Connect to the host.
-        let retVal = withUnsafePointer(to: &socketAddress) { socketAddressInPtr -> Int32 in
-            let socketAddressPtr = UnsafeRawPointer(socketAddressInPtr).assumingMemoryBound(to: sockaddr.self)
+        let retVal = withUnsafePointer(to: &socketAddress) { saiPtr -> Int32 in
+            let saPtr = UnsafeRawPointer(saiPtr).assumingMemoryBound(to: sockaddr.self)
             #if os(macOS)
-            return Darwin.connect(self.socketfd, socketAddressPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
+            return Darwin.connect(self.socketfd, saPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
             #elseif os(Linux)
-            return Glibc.connect(self.socketfd, socketAddressPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
+            return Glibc.connect(self.socketfd, saPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
             #endif
         }
 
@@ -198,23 +197,20 @@ class SCSocket {
     ///
     /// - Parameter message: The message that should be sent to the host.
     func send(message: String) {
-        if self.socketfd != SCSocket.invalidSocket && !message.isEmpty {
-            message.withCString { bytes in
+        if self.socketfd != SCSocket.invalidSocket {
+            message.withCString {
                 // The length of the message.
                 let length = message.count
                 // The length of the message that is already sent to the host.
                 var sentLength = 0
 
-                // The return value of the low-level send function.
-                var retVal = -1
-
                 // Loop until we have sent the whole message to the host.
                 while sentLength < length {
                     // Send the message to the host.
                     #if os(macOS)
-                    retVal = Darwin.send(self.socketfd, bytes.advanced(by: sentLength), length - sentLength, 0)
+                    let retVal = Darwin.send(self.socketfd, $0.advanced(by: sentLength), length - sentLength, 0)
                     #elseif os(Linux)
-                    retVal = Glibc.send(self.socketfd, bytes.advanced(by: sentLength), length - sentLength, 0)
+                    let retVal = Glibc.send(self.socketfd, $0.advanced(by: sentLength), length - sentLength, 0)
                     #endif
 
                     // Check whether an error occurred or nothing has been sent.
