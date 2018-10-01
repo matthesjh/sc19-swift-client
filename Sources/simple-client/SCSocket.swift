@@ -46,7 +46,7 @@ extension fd_set {
     ///
     /// - Remark: Replacement for the `FD_SET` macro.
     ///
-    /// - Parameter fd: The file descriptor that should be added to the set.
+    /// - Parameter fd: The file descriptor to be added to the set.
     mutating func set(_ fd: Int32) {
         let intOffset = Int(fd) / 32
         let bitOffset = Int(fd) % 32
@@ -125,7 +125,7 @@ class SCSocket {
     ///
     /// - Parameters:
     ///   - host: The host to connect to.
-    ///   - port: The port that should be used for the connection.
+    ///   - port: The port to be used for the connection.
     ///
     /// - Returns: `true` if the connection was successful; otherwise, `false`.
     func connect(toHost host: String, withPort port: UInt16) -> Bool {
@@ -195,7 +195,7 @@ class SCSocket {
 
     /// Sends the given message to the host.
     ///
-    /// - Parameter message: The message that should be sent to the host.
+    /// - Parameter message: The message to be sent to the host.
     func send(message: String) {
         if self.socketfd != SCSocket.invalidSocket {
             message.withCString {

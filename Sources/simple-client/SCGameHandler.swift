@@ -36,7 +36,7 @@ class SCGameHandler: NSObject, XMLParserDelegate {
     private var gameState: SCGameState!
     /// Indicates whether the game state has been initially created.
     private var gameStateCreated = false
-    /// Indicates whether the game loop should be leaved.
+    /// Indicates whether the game loop should be left.
     private var leaveGame = false
     /// The delegate (game logic) which handles the requests of the game server.
     var delegate: SCGameHandlerDelegate?
