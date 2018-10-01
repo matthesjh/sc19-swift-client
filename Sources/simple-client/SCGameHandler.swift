@@ -18,7 +18,7 @@ protocol SCGameHandlerDelegate {
 }
 
 /// The game handler is responsible for the communication with the game server
-/// and the logic.
+/// and the selection of the game logic.
 class SCGameHandler: NSObject, XMLParserDelegate {
     // MARK: - Properties
 
@@ -34,10 +34,10 @@ class SCGameHandler: NSObject, XMLParserDelegate {
     private var playerColor: SCPlayerColor!
     /// The current state of the game.
     private var gameState: SCGameState!
-    /// Indicates whether the game state has been created.
+    /// Indicates whether the game state has been initially created.
     private var gameStateCreated = false
-    /// Indicates whether the game loop should continue.
-    private var notLeaveGame = true
+    /// Indicates whether the game loop should be leaved.
+    private var leaveGame = false
     /// The delegate (game logic) which handles the requests of the game server.
     var delegate: SCGameHandlerDelegate?
 
@@ -70,12 +70,12 @@ class SCGameHandler: NSObject, XMLParserDelegate {
             self.socket.send(message: "<protocol><joinPrepared reservationCode=\"\(self.reservation)\" />")
         }
 
-        // The root element of the received XML document. A temporary fix for
+        // The root element for the received XML document. A temporary fix for
         // the XMLParser.
         let rootElem = "<root>".data(using: .utf8)!
 
         // Loop until the game is over.
-        while self.notLeaveGame {
+        while !self.leaveGame {
             // Receive the message from the game server.
             var data = Data()
             self.socket.receive(into: &data)
@@ -98,7 +98,7 @@ class SCGameHandler: NSObject, XMLParserDelegate {
             print("ERROR: \(error)")
         }
 
-        self.notLeaveGame = false
+        self.leaveGame = true
     }
 
     // MARK: - XMLParserDelegate
@@ -117,10 +117,10 @@ class SCGameHandler: NSObject, XMLParserDelegate {
                 // Get the class attribute.
                 if let classS = attributeDict["class"] {
                     switch classS {
-                        case "error", "result":
+                        case "result":
                             // Leave the game.
                             self.delegate?.onGameEnded()
-                            self.notLeaveGame = false
+                            self.leaveGame = true
                             parser.abortParsing()
                         case "sc.framework.plugins.protocol.MoveRequest":
                             // Send the move returned by the game logic.
@@ -148,7 +148,7 @@ class SCGameHandler: NSObject, XMLParserDelegate {
                             break
                     }
                 } else {
-                    self.exitGame(withError: "The class attribute could not be parsed!")
+                    self.exitGame(withError: "The class attribute of the data element is missing!")
                     parser.abortParsing()
                 }
             case "field":
@@ -171,7 +171,7 @@ class SCGameHandler: NSObject, XMLParserDelegate {
                 if let roomId = attributeDict["roomId"] {
                     self.roomId = roomId
                 } else {
-                    self.exitGame(withError: "Room ID is missing or could not be parsed!")
+                    self.exitGame(withError: "The room ID is missing!")
                     parser.abortParsing()
                 }
             case "lastMove":
@@ -182,7 +182,10 @@ class SCGameHandler: NSObject, XMLParserDelegate {
                    let x = Int(xS),
                    let y = Int(yS),
                    let dir = SCDirection(rawValue: dirS) {
-                    _ = self.gameState.performMove(move: SCMove(x: x, y: y, direction: dir))
+                    if !self.gameState.performMove(move: SCMove(x: x, y: y, direction: dir)) {
+                        self.exitGame(withError: "The last move could not be performed on the game state!")
+                        parser.abortParsing()
+                    }
                 } else {
                     self.exitGame(withError: "The last move could not be parsed!")
                     parser.abortParsing()
@@ -190,14 +193,16 @@ class SCGameHandler: NSObject, XMLParserDelegate {
             case "left":
                 // Leave the game.
                 self.delegate?.onGameEnded()
-                self.notLeaveGame = false
+                self.leaveGame = true
             case "state":
                 // Create the initial game state and the game logic.
                 if !self.gameStateCreated {
                     if let startPlayerColor = attributeDict["startPlayerColor"],
                        let startPlayer = SCPlayerColor(rawValue: startPlayerColor) {
                         self.gameState = SCGameState(startPlayer: startPlayer)
-                        // Select a game logic based on the strategy.
+
+                        // TODO: Select the game logic based on the strategy.
+
                         self.delegate = SCGameLogic(player: self.playerColor)
                     } else {
                         self.exitGame(withError: "The initial game state could not be parsed!")
