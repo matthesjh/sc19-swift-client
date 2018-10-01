@@ -246,6 +246,7 @@ class SCGameState {
     /// - Parameters:
     ///   - x: The x-coordinate of the piranha.
     ///   - y: The y-coordinate of the piranha.
+    ///   - direction: The direction for the piranha.
     ///
     /// - Returns: The number of steps that must be taken. If the given x- or
     ///   y-coordinate is not on the board, `-1` is returned.
@@ -265,7 +266,7 @@ class SCGameState {
     /// Returns the number of steps that must be taken when performing the given
     /// move.
     ///
-    /// - Parameter move: The move that should be performed.
+    /// - Parameter move: The move to be performed.
     ///
     /// - Returns: The number of steps that must be taken. If the x- or
     ///   y-coordinate of the move is not on the board, `-1` is returned.
@@ -277,8 +278,8 @@ class SCGameState {
     /// distance.
     ///
     /// - Parameters:
-    ///   - move: The move that should be performed.
-    ///   - distance: The number of steps that should be taken.
+    ///   - move: The move to be performed.
+    ///   - distance: The number of steps to be taken.
     ///
     /// - Returns: The destination field if it is on the board; otherwise,
     ///   `nil`. If the distance is less than zero, `nil` is returned.
@@ -304,8 +305,8 @@ class SCGameState {
     /// field that is reached by performing the move with the given distance.
     ///
     /// - Parameters:
-    ///   - move: The move that should be performed.
-    ///   - distance: The number of steps that should be taken.
+    ///   - move: The move to be performed.
+    ///   - distance: The number of steps to be taken.
     ///
     /// - Returns: The fields between the start and end field. If the distance
     ///   is less than or equal to zero, an empty array is returned.
@@ -337,7 +338,7 @@ class SCGameState {
 
     /// Returns the possible moves of the current player.
     ///
-    /// - Returns: The array of moves.
+    /// - Returns: The array of possible moves.
     func possibleMoves() -> [SCMove] {
         var moves = [SCMove]()
 
@@ -372,7 +373,7 @@ class SCGameState {
 
     /// Performs the given move on the game board.
     ///
-    /// - Returns: `true` if the move can be performed; otherwise, `false`.
+    /// - Returns: `true` if the move could be performed; otherwise, `false`.
     func performMove(move: SCMove) -> Bool {
         let x = move.x
         let y = move.y
