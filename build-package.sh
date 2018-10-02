@@ -14,3 +14,6 @@ fi
 
 echo "Using Swift version:"
 swift -version
+
+echo "Building package..."
+swift build

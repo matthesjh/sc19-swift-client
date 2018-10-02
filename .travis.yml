@@ -9,9 +9,8 @@ matrix:
       osx_image: xcode10
 
 script:
-  - chmod u+x install-swift.sh
-  - ./install-swift.sh
-  - swift build
+  - chmod u+x build-package.sh
+  - ./build-package.sh
 
 notifications:
   email:
