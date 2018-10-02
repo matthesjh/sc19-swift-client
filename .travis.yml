@@ -1,10 +1,16 @@
-language: swift
-
-os: osx
-
-osx_image: xcode10
+matrix:
+  include:
+    - language: generic
+      os: linux
+      dist: trusty
+      sudo: false
+    - language: swift
+      os: osx
+      osx_image: xcode10
 
 script:
+  - chmod u+x install-swift.sh
+  - ./install-swift.sh
   - swift build
 
 notifications:
