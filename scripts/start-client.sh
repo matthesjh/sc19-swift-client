@@ -1,4 +1,6 @@
 #!/bin/sh
 
-chmod u+x simple-client
-./simple-client "$@"
+EXECUTABLE_NAME=simple-client
+
+chmod u+x "${EXECUTABLE_NAME}"
+./"${EXECUTABLE_NAME}" "$@"
