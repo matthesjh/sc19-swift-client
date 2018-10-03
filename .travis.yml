@@ -9,8 +9,8 @@ matrix:
       osx_image: xcode10
 
 script:
-  - chmod u+x build-package.sh
-  - ./build-package.sh
+  - chmod u+x scripts/build-package.sh
+  - scripts/build-package.sh
 
 notifications:
   email:
