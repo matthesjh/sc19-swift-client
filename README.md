@@ -37,3 +37,16 @@ Usage: simple-client [options]
   --help:
       Print this help message.
 ```
+
+## Creating an archive for upload
+
+In order to use the simple client on the [competition system](https://contest.software-challenge.de/) (a.k.a. Wettkampfsystem), a zip archive must be created that contains a start script and the compiled executable. To create such an archive, run the following commands on the terminal.
+
+```shell
+chmod u+x scripts/zip-client.sh
+scripts/zip-client.sh
+```
+
+The resulting archive (`simple-client.zip`) can then be uploaded to the competition system. Please make sure that you select the start script (`run-client.sh`) as the main file in the uploading process.
+
+**Note:** The above script (`zip-client.sh`) builds the client with the `release` configuration and calls the Swift compiler with the `-O` flag to optimize the executable for speed.
