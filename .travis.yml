@@ -1,11 +1,11 @@
 matrix:
   include:
-    - language: generic
-      os: linux
+    - os: linux
       dist: trusty
+      language: generic
       sudo: false
-    - language: swift
-      os: osx
+    - os: osx
+      language: swift
       osx_image: xcode10
 
 script:
