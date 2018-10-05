@@ -3,7 +3,6 @@ matrix:
     - os: linux
       dist: trusty
       language: generic
-      sudo: false
     - os: osx
       language: swift
       osx_image: xcode10
