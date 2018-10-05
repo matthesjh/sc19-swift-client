@@ -50,3 +50,43 @@ scripts/zip-client.sh
 The resulting archive (`simple-client.zip`) can then be uploaded to the competition system. Please make sure that you select the start script (`start-client.sh`) as the main file in the uploading process.
 
 **Note:** The above script (`zip-client.sh`) builds the client with the `release` configuration and calls the Swift compiler with the `-O` flag to optimize the executable for speed.
+
+## Customizing the logic
+
+To customize the logic of the simple client to your own needs, simply adjust the [`onMoveRequested()`](Sources/simple-client/SCGameLogic.swift#L30) method in the `SCGameLogic.swift` class.
+
+```swift
+func onMoveRequested() -> SCMove? {
+    print("*** A move is requested by the game server!")
+
+    // TODO: Add your own logic here.
+
+    return self.gameState.possibleMoves().randomElement()
+}
+```
+
+If you want to return e.g. the last possible move, the method can be changed as follows.
+
+```swift
+func onMoveRequested() -> SCMove? {
+    print("*** A move is requested by the game server!")
+
+    return self.gameState.possibleMoves().last
+}
+```
+
+In addition to the default logic class, you can also implement your own logic classes. To use one of your own logic classes, the simple client offers the possibility to select a strategy (logic) based on the value of a command-line argument (`-s` or `--strategy`). By default, this feature is disabled. To enable the feature, create a logic instance based on the `strategy` property of the `SCGameHandler.swift` class. This can be done by replacing the existing [code line](Sources/simple-client/SCGameHandler.swift#L206) with a `switch`-statement like the following.
+
+```swift
+switch self.strategy {
+    case "winner":
+        self.delegate = SCWinnerLogic(player: self.playerColor)
+    case "crazy":
+        self.delegate = SCCrazyGameLogic(player: self.playerColor)
+    case "another_logic":
+        self.delegate = AnotherLogic(player: self.playerColor)
+    // ...
+    default:
+        self.delegate = SCGameLogic(player: self.playerColor)
+}
+```
