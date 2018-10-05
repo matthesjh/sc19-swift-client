@@ -75,7 +75,7 @@ func onMoveRequested() -> SCMove? {
 }
 ```
 
-In addition to the default logic class, you can also implement your own logic classes. To use one of your own logic classes, the simple client offers the possibility to select a strategy (logic) based on the value of a command-line argument (`-s` or `--strategy`). By default, this feature is disabled. To enable the feature, create a logic instance based on the `strategy` property of the `SCGameHandler.swift` class. This can be done by replacing the existing [code line](Sources/simple-client/SCGameHandler.swift#L206) with a `switch`-statement like the following.
+In addition to the default logic class, you can also implement your own logic classes. To use one of your own logic classes, the simple client offers the possibility to select a strategy (logic class) based on the value of a command-line argument (`-s` or `--strategy`). By default, this feature is disabled. To enable the feature, create a logic instance based on the `strategy` property of the `SCGameHandler.swift` class. This can be done by replacing the existing [code line](Sources/simple-client/SCGameHandler.swift#L206) with a `switch`-statement like the following.
 
 ```swift
 switch self.strategy {
@@ -90,3 +90,7 @@ switch self.strategy {
         self.delegate = SCGameLogic(player: self.playerColor)
 }
 ```
+
+## Renaming the client
+
+If you want to change the name of the simple client, you have to adjust the target name in the [`Package.swift`](Package.swift) file and the directory name in the [`Sources`](Sources) folder. Furthermore the `EXECUTABLE_NAME` variable in the [shell scripts](scripts) needs to be changed.
