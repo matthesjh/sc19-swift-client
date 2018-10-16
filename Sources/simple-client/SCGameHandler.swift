@@ -80,11 +80,8 @@ class SCGameHandler: NSObject, XMLParserDelegate {
             var data = Data()
             self.socket.receive(into: &data)
 
-            // Add the root element to the received XML document.
-            data = rootElem + data
-
             // Parse the received XML document.
-            let parser = XMLParser(data: data)
+            let parser = XMLParser(data: rootElem + data)
             parser.delegate = self
             _ = parser.parse()
         }
