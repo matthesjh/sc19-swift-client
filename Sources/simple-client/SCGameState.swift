@@ -87,8 +87,8 @@ class SCGameState {
     func getFieldsOf(player: SCPlayerColor) -> [SCField] {
         var fields = [SCField]()
 
-        for columns in self.board {
-            for field in columns {
+        for column in self.board {
+            for field in column {
                 if field.state == player.fieldState {
                     fields.append(field)
                 }
