@@ -84,7 +84,7 @@ class SCGameState {
     /// - Parameter player: The color of the player to search for on the board.
     ///
     /// - Returns: The array of fields covered by a piranha of the given player.
-    func getFieldsOf(player: SCPlayerColor) -> [SCField] {
+    func getFields(ofPlayer player: SCPlayerColor) -> [SCField] {
         var fields = [SCField]()
 
         for column in self.board {
@@ -344,7 +344,7 @@ class SCGameState {
 
         let opponentFieldState = self.currentPlayer.opponentColor.fieldState
 
-        for field in self.getFieldsOf(player: self.currentPlayer) {
+        for field in self.getFields(ofPlayer: self.currentPlayer) {
             dirLoop: for dir in SCDirection.allCases {
                 let move = SCMove(x: field.x, y: field.y, direction: dir)
                 let distance = self.distance(forMove: move)
