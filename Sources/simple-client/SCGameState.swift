@@ -44,6 +44,23 @@ class SCGameState {
         self.board = gameState.board
     }
 
+    // MARK: - Subscripts
+
+    /// Accesses the field state of the field with the given x- and
+    /// y-coordinate.
+    ///
+    /// - Parameters:
+    ///   - x: The x-coordinate of the field.
+    ///   - y: The y-coordinate of the field.
+    subscript(x: Int, y: Int) -> SCFieldState {
+        get {
+            return self.board[x][y].state
+        }
+        set {
+            self.board[x][y].state = newValue
+        }
+    }
+
     // MARK: - Methods
 
     /// Returns the field with the given x- and y-coordinate.
@@ -65,7 +82,7 @@ class SCGameState {
     ///
     /// - Returns: The state of the field.
     func getFieldState(x: Int, y: Int) -> SCFieldState {
-        return self.board[x][y].state
+        return self[x, y]
     }
 
     /// Sets the field state of the field with the given x- and y-coordinate to
@@ -76,7 +93,7 @@ class SCGameState {
     ///   - y: The y-coordinate of the field.
     ///   - state: The new state of the field.
     func setFieldState(x: Int, y: Int, state: SCFieldState) {
-        self.board[x][y].state = state
+        self[x, y] = state
     }
 
     /// Returns the fields covered by a piranha of the given player.

@@ -157,7 +157,7 @@ class SCGameHandler: NSObject, XMLParserDelegate {
                        let x = Int(xS),
                        let y = Int(yS),
                        let state = SCFieldState(rawValue: stateS) {
-                        self.gameState.setFieldState(x: x, y: y, state: state)
+                        self.gameState[x, y] = state
                     } else {
                         self.exitGame(withError: "A field could not be parsed!")
                         parser.abortParsing()
