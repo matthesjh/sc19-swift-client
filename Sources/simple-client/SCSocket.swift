@@ -70,7 +70,7 @@ class SCSocket {
     /// The low-level BSD socket used for the TCP connection.
     private var socketfd: Int32
 
-    /// Indicates whether there is some data that can be read fom the socket.
+    /// Indicates whether there is some data that can be read from the socket.
     var readable: Bool {
         // Specify how long the select can take to complete.
         var timeout = timeval(tv_sec: 0, tv_usec: 50000)
