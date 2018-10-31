@@ -122,10 +122,7 @@ class SCGameHandler: NSObject, XMLParserDelegate {
                         case "sc.framework.plugins.protocol.MoveRequest":
                             // Send the move returned by the game logic.
                             if var move = self.delegate?.onMoveRequested() {
-                                var hints = ""
-                                for hint in move.debugHints {
-                                    hints += "<hint content=\"\(hint)\" />"
-                                }
+                                let hints = move.debugHints.reduce(into: "") { $0 += "<hint content=\"\($1)\" />" }
                                 let mv = "<data class=\"move\" x=\"\(move.x)\" y=\"\(move.y)\" direction=\"\(move.direction)\">\(hints)</data>"
                                 self.socket.send(message: "<room roomId=\"\(self.roomId!)\">\(mv)</room>")
                             } else {
