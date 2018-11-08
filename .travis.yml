@@ -1,7 +1,7 @@
 matrix:
   include:
     - os: linux
-      dist: trusty
+      dist: xenial
       language: generic
     - os: osx
       language: swift
