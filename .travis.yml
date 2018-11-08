@@ -5,7 +5,7 @@ matrix:
       language: generic
     - os: osx
       language: swift
-      osx_image: xcode10
+      osx_image: xcode10.1
 
 script:
   - chmod u+x scripts/build-package.sh

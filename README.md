@@ -8,7 +8,7 @@ The game of the contest year 2018/2019 is called *Piranhas*. It is played on a b
 
 ## Usage
 
-Please make sure that you have installed the latest Swift toolchain (or at least version 4.2) on your operating system. The latest version of Swift can be found [here](https://swift.org/download/).
+Please make sure that you have installed the latest Swift toolchain (or at least version 4.2.1) on your operating system. The latest version of Swift can be found [here](https://swift.org/download/).
 
 To build and run the executable of the simple client, use the `run` command of the Swift Package Manager.
 
