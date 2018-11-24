@@ -129,7 +129,7 @@ class SCSocket {
     ///
     /// - Returns: `true` if the connection was successful; otherwise, `false`.
     func connect(toHost host: String, withPort port: UInt16) -> Bool {
-        /// Close an existing connection.
+        // Close an existing connection.
         self.close()
 
         // Create a new socket.
