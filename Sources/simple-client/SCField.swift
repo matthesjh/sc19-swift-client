@@ -21,7 +21,7 @@ struct SCField {
         self.state = state
     }
 
-    /// Returns a boolean value indicating whether the field is covered by a red
+    /// Returns a Boolean value indicating whether the field is covered by a red
     /// or blue piranha.
     ///
     /// - Returns: `true` if the field is covered by a red or blue piranha;
@@ -30,14 +30,14 @@ struct SCField {
         return self.state == .red || self.state == .blue
     }
 
-    /// Returns a boolean value indicating whether the field is empty.
+    /// Returns a Boolean value indicating whether the field is empty.
     ///
     /// - Returns: `true` if the field is empty; otherwise, `false`.
     func isEmpty() -> Bool {
         return self.state == .empty
     }
 
-    /// Returns a boolean value indicating whether the field is obstructed.
+    /// Returns a Boolean value indicating whether the field is obstructed.
     ///
     /// - Returns: `true` if the field is obstructed; otherwise, `false`.
     func isObstructed() -> Bool {
