@@ -29,4 +29,18 @@ struct SCField {
     func hasPiranha() -> Bool {
         return self.state == .red || self.state == .blue
     }
+
+    /// Returns a boolean value indicating whether the field is empty.
+    ///
+    /// - Returns: `true` if the field is empty; otherwise, `false`.
+    func isEmpty() -> Bool {
+        return self.state == .empty
+    }
+
+    /// Returns a boolean value indicating whether the field is obstructed.
+    ///
+    /// - Returns: `true` if the field is obstructed; otherwise, `false`.
+    func isObstructed() -> Bool {
+        return self.state == .obstructed
+    }
 }
