@@ -4,6 +4,11 @@ import Darwin
 import Glibc
 #endif
 
+/// The name of the executable.
+let executableName = "simple-client"
+/// The version number of the executable.
+let versionNumber = "1.0.0"
+
 /// The default IP address of the host to connect to.
 let defaultHost = "127.0.0.1"
 /// The default port used for the connection.
@@ -21,7 +26,7 @@ var strategy = ""
 /// Prints the help message into the standard output.
 func printHelpMessage() {
     print("""
-        Usage: simple-client [options]
+        Usage: \(executableName) [options]
           -h, --host:
               The IP address of the host to connect to (default: \(defaultHost)).
           -p, --port:
@@ -63,7 +68,7 @@ while i < argc {
         printHelpMessage()
         exit(EXIT_SUCCESS)
     } else if arg == "--version" {
-        print("simple-client version 1.0.0")
+        print("\(executableName) version \(versionNumber)")
         exit(EXIT_SUCCESS)
     } else if arg.hasPrefix("-") {
         i += 1
