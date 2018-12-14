@@ -1,6 +1,8 @@
 /// A move for a piranha. It consists of the x- and y-coordinate of the piranha
 /// and a direction.
 struct SCMove {
+    // MARK: - Properties
+
     /// The x-coordinate of the piranha.
     let x: Int
     /// The y-coordinate of the piranha.
@@ -9,6 +11,8 @@ struct SCMove {
     let direction: SCDirection
     /// The debug hints associated with the move.
     lazy var debugHints = [String]()
+
+    // MARK: - Initializers
 
     /// Creates a new move for the piranha with the given x- and y-coordinate
     /// and the given direction.

@@ -17,9 +17,7 @@ enum SCDirection: String, CaseIterable, CustomStringConvertible {
     /// Move to northwest.
     case upLeft = "UP_LEFT"
 
-    var description: String {
-        return self.rawValue
-    }
+    // MARK: - Properties
 
     /// The two-dimensional vector describing the direction.
     var vector: (vx: Int, vy: Int) {
@@ -41,5 +39,11 @@ enum SCDirection: String, CaseIterable, CustomStringConvertible {
             case .upLeft:
                 return (-1, 1)
         }
+    }
+
+    // MARK: - CustomStringConvertible
+
+    var description: String {
+        return self.rawValue
     }
 }

@@ -9,6 +9,8 @@ enum SCFieldState: String, CaseIterable, CustomStringConvertible {
     /// The field is empty.
     case empty = "EMPTY"
 
+    // MARK: - CustomStringConvertible
+
     var description: String {
         return self.rawValue
     }

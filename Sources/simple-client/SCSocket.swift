@@ -7,6 +7,8 @@ import Glibc
 import Foundation
 
 extension fd_set {
+    // MARK: - Properties
+
     #if os(macOS)
     /// The maximum number of file descriptors in `fd_set`.
     private static let setSize = Int(__DARWIN_FD_SETSIZE) / 32
@@ -14,6 +16,8 @@ extension fd_set {
     /// The maximum number of file descriptors in `fd_set`.
     private static let setSize = Int(__FD_SETSIZE) / 32
     #endif
+
+    // MARK: - Methods
 
     /// Calls the given closure with a mutable pointer to the underlying set.
     ///
