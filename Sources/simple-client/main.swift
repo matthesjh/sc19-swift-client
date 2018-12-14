@@ -32,6 +32,8 @@ func printHelpMessage() {
               The strategy used for the game.
           --help:
               Print this help message.
+          --version:
+              Print the version number.
         """)
 }
 
@@ -59,6 +61,9 @@ while i < argc {
 
     if arg == "--help" {
         printHelpMessage()
+        exit(EXIT_SUCCESS)
+    } else if arg == "--version" {
+        print("simple-client version 1.0.0")
         exit(EXIT_SUCCESS)
     } else if arg.hasPrefix("-") {
         i += 1

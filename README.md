@@ -36,6 +36,8 @@ Usage: simple-client [options]
       The strategy used for the game.
   --help:
       Print this help message.
+  --version:
+      Print the version number.
 ```
 
 ## Creating an archive for upload
