@@ -184,28 +184,11 @@ class SCGameState {
 
         var count = 0
 
-        // Move down left.
-        var fX = x
-        var fY = y
-        while fX >= 0 && fY >= 0 {
-            if self.board[fX][fY].hasPiranha() {
+        let (min, max) = x < y ? (x, y) : (y, x)
+        for i in min * -1 ..< SCConstants.boardSize - max {
+            if self.board[x + i][y + i].hasPiranha() {
                 count += 1
             }
-
-            fX -= 1
-            fY -= 1
-        }
-
-        // Move up right.
-        fX = x + 1
-        fY = y + 1
-        while fX < SCConstants.boardSize && fY < SCConstants.boardSize {
-            if self.board[fX][fY].hasPiranha() {
-                count += 1
-            }
-
-            fX += 1
-            fY += 1
         }
 
         return count
