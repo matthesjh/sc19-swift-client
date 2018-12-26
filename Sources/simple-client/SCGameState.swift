@@ -367,7 +367,7 @@ class SCGameState {
                || x >= SCConstants.boardSize
                || y < 0
                || y >= SCConstants.boardSize
-               || self.board[x][y].state != self.currentPlayer.fieldState {
+               || self[x, y] != self.currentPlayer.fieldState {
             return false
         }
 
@@ -385,8 +385,8 @@ class SCGameState {
                     return false
                 }
 
-                self.board[x][y].state = .empty
-                self.board[destField.x][destField.y].state = self.currentPlayer.fieldState
+                self[x, y] = .empty
+                self[destField.x, destField.y] = self.currentPlayer.fieldState
                 self.turn += 1
                 self.currentPlayer.switchColor()
                 self.lastMove = move
