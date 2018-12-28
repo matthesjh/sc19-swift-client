@@ -220,7 +220,7 @@ class SCSocket {
                     #endif
 
                     // Check whether an error occurred or nothing has been sent.
-                    if (retVal <= 0) {
+                    if retVal <= 0 {
                         break
                     }
 
