@@ -47,7 +47,7 @@ func printHelpMessage() {
 /// Exits the program with the given error message.
 ///
 /// - Parameter error: The error message to print into the standard output.
-func exit(withError error: String) {
+func exit(withError error: String) -> Never {
     if !error.isEmpty {
         print("ERROR: \(error)")
     }
@@ -75,27 +75,26 @@ while i < argc {
     } else if arg.hasPrefix("-") {
         i += 1
 
-        if i < argc {
-            let argValue = argv[i]
-
-            switch arg {
-                case "-h", "--host":
-                    host = argValue
-                case "-p", "--port":
-                    if let portValue = UInt16(argValue) {
-                        port = portValue
-                    } else {
-                        exit(withError: "The value \"\(argValue)\" can not be converted to a port number!")
-                    }
-                case "-r", "--reservation":
-                    reservation = argValue
-                case "-s", "--strategy":
-                    strategy = argValue
-                default:
-                    exit(withError: "Unrecognized option \"\(arg)\"!")
-            }
-        } else {
+        guard i < argc else {
             exit(withError: "Missing value for the option \"\(arg)\"!")
+        }
+
+        let argValue = argv[i]
+
+        switch arg {
+            case "-h", "--host":
+                host = argValue
+            case "-p", "--port":
+                guard let portValue = UInt16(argValue) else {
+                    exit(withError: "The value \"\(argValue)\" can not be converted to a port number!")
+                }
+                port = portValue
+            case "-r", "--reservation":
+                reservation = argValue
+            case "-s", "--strategy":
+                strategy = argValue
+            default:
+                exit(withError: "Unrecognized option \"\(arg)\"!")
         }
     }
 
