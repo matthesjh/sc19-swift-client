@@ -2,6 +2,8 @@
 import Darwin
 #elseif os(Linux)
 import Glibc
+#else
+#error("Unsupported platform!")
 #endif
 
 import Foundation
