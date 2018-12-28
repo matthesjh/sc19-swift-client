@@ -102,13 +102,7 @@ class SCGameState {
     ///
     /// - Returns: The array of fields covered by a piranha of the given player.
     func getFields(ofPlayer player: SCPlayerColor) -> [SCField] {
-        var fields = [SCField]()
-
-        for column in self.board {
-            fields += column.filter { $0.state == player.fieldState }
-        }
-
-        return fields
+        return self.board.reduce(into: []) { $0 += $1.filter { $0.state == player.fieldState } }
     }
 
     /// Returns the number of steps that must be taken when moving a piranha
