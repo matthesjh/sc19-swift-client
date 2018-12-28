@@ -105,11 +105,7 @@ class SCGameState {
         var fields = [SCField]()
 
         for column in self.board {
-            for field in column {
-                if field.state == player.fieldState {
-                    fields.append(field)
-                }
-            }
+            fields += column.filter { $0.state == player.fieldState }
         }
 
         return fields
@@ -123,18 +119,16 @@ class SCGameState {
     /// - Returns: The number of steps that must be taken. If the given row is
     ///   not on the board, `-1` is returned.
     func moveDistanceHorizontal(inRow row: Int) -> Int {
-        if row < 0 || row >= SCConstants.boardSize {
+        guard row >= 0, row < SCConstants.boardSize else {
             return -1
         }
 
         var count = 0
 
-        var i = 0
-        while i < SCConstants.boardSize {
+        for i in 0..<SCConstants.boardSize {
             if self.board[i][row].hasPiranha() {
                 count += 1
             }
-            i += 1
         }
 
         return count
@@ -148,18 +142,16 @@ class SCGameState {
     /// - Returns: The number of steps that must be taken. If the given column
     ///   is not on the board, `-1` is returned.
     func moveDistanceVertical(inColumn column: Int) -> Int {
-        if column < 0 || column >= SCConstants.boardSize {
+        guard column >= 0, column < SCConstants.boardSize else {
             return -1
         }
 
         var count = 0
 
-        var i = 0
-        while i < SCConstants.boardSize {
+        for i in 0..<SCConstants.boardSize {
             if self.board[column][i].hasPiranha() {
                 count += 1
             }
-            i += 1
         }
 
         return count
@@ -176,9 +168,8 @@ class SCGameState {
     /// - Returns: The number of steps that must be taken. If the given x- or
     ///   y-coordinate is not on the board, `-1` is returned.
     func moveDistanceDiagonalRising(x: Int, y: Int) -> Int {
-        if x < 0 || x >= SCConstants.boardSize
-                 || y < 0
-                 || y >= SCConstants.boardSize {
+        guard x >= 0, x < SCConstants.boardSize,
+              y >= 0, y < SCConstants.boardSize else {
             return -1
         }
 
@@ -205,9 +196,8 @@ class SCGameState {
     /// - Returns: The number of steps that must be taken. If the given x- or
     ///   y-coordinate is not on the board, `-1` is returned.
     func moveDistanceDiagonalFalling(x: Int, y: Int) -> Int {
-        if x < 0 || x >= SCConstants.boardSize
-                 || y < 0
-                 || y >= SCConstants.boardSize {
+        guard x >= 0, x < SCConstants.boardSize,
+              y >= 0, y < SCConstants.boardSize else {
             return -1
         }
 
@@ -268,7 +258,7 @@ class SCGameState {
     /// - Returns: The destination field if it is on the board; otherwise,
     ///   `nil`. If the distance is less than zero, `nil` is returned.
     func destination(forMove move: SCMove, withDistance distance: Int) -> SCField? {
-        if distance < 0 {
+        guard distance >= 0 else {
             return nil
         }
 
@@ -276,9 +266,8 @@ class SCGameState {
         let fX = move.x + vx * distance
         let fY = move.y + vy * distance
 
-        if fX < 0 || fX >= SCConstants.boardSize
-                  || fY < 0
-                  || fY >= SCConstants.boardSize {
+        guard fX >= 0, fX < SCConstants.boardSize,
+              fY >= 0, fY < SCConstants.boardSize else {
             return nil
         }
 
@@ -295,7 +284,7 @@ class SCGameState {
     /// - Returns: The fields between the start and end field. If the distance
     ///   is less than or equal to zero, an empty array is returned.
     func fieldsInDirection(ofMove move: SCMove, withDistance distance: Int) -> [SCField] {
-        if distance <= 0 {
+        guard distance > 0 else {
             return []
         }
 
@@ -303,18 +292,15 @@ class SCGameState {
         let fX = move.x + vx * distance
         let fY = move.y + vy * distance
 
-        if fX < 0 || fX >= SCConstants.boardSize
-                  || fY < 0
-                  || fY >= SCConstants.boardSize {
+        guard fX >= 0, fX < SCConstants.boardSize,
+              fY >= 0, fY < SCConstants.boardSize else {
             return []
         }
 
         var fields = [SCField]()
 
-        var i = 1
-        while i < distance {
+        for i in 1..<distance {
             fields.append(self.board[move.x + vx * i][move.y + vy * i])
-            i += 1
         }
 
         return fields
@@ -333,19 +319,15 @@ class SCGameState {
                 let move = SCMove(x: field.x, y: field.y, direction: dir)
                 let distance = self.distance(forMove: move)
 
-                if distance > 0 {
-                    if let destField = self.destination(forMove: move, withDistance: distance) {
-                        for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
-                            if f.state == opponentFieldState {
-                                continue dirLoop
-                            }
-                        }
-
-                        if destField.state == .obstructed
-                               || destField.state == self.currentPlayer.fieldState {
+                if distance > 0,
+                   let destField = self.destination(forMove: move, withDistance: distance) {
+                    for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
+                        if f.state == opponentFieldState {
                             continue dirLoop
                         }
+                    }
 
+                    if destField.state == .empty || destField.state == opponentFieldState {
                         moves.append(move)
                     }
                 }
@@ -362,37 +344,33 @@ class SCGameState {
         let x = move.x
         let y = move.y
 
-        if self.turn >= SCConstants.turnLimit
-               || x < 0
-               || x >= SCConstants.boardSize
-               || y < 0
-               || y >= SCConstants.boardSize
-               || self[x, y] != self.currentPlayer.fieldState {
+        guard self.turn < SCConstants.turnLimit,
+              x >= 0, x < SCConstants.boardSize,
+              y >= 0, y < SCConstants.boardSize,
+              self[x, y] == self.currentPlayer.fieldState else {
             return false
         }
 
         let distance = self.distance(forMove: move)
-        if distance > 0 {
-            if let destField = self.destination(forMove: move, withDistance: distance) {
-                for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
-                    if f.state == self.currentPlayer.opponentColor.fieldState {
-                        return false
-                    }
-                }
-
-                if destField.state == .obstructed
-                       || destField.state == self.currentPlayer.fieldState {
+        if distance > 0,
+           let destField = self.destination(forMove: move, withDistance: distance) {
+            for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
+                if f.state == self.currentPlayer.opponentColor.fieldState {
                     return false
                 }
-
-                self[x, y] = .empty
-                self[destField.x, destField.y] = self.currentPlayer.fieldState
-                self.turn += 1
-                self.currentPlayer.switchColor()
-                self.lastMove = move
-
-                return true
             }
+
+            if destField.state == .obstructed || destField.state == self.currentPlayer.fieldState {
+                return false
+            }
+
+            self[x, y] = .empty
+            self[destField.x, destField.y] = self.currentPlayer.fieldState
+            self.turn += 1
+            self.currentPlayer.switchColor()
+            self.lastMove = move
+
+            return true
         }
 
         return false
