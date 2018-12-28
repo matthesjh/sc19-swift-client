@@ -111,10 +111,10 @@ class SCGameState {
     /// - Parameter row: The row of the piranha.
     ///
     /// - Returns: The number of steps that must be taken. If the given row is
-    ///   not on the board, `-1` is returned.
-    func moveDistanceHorizontal(inRow row: Int) -> Int {
+    ///   not on the board, `nil` is returned.
+    func moveDistanceHorizontal(inRow row: Int) -> Int? {
         guard row >= 0, row < SCConstants.boardSize else {
-            return -1
+            return nil
         }
 
         var count = 0
@@ -134,10 +134,10 @@ class SCGameState {
     /// - Parameter column: The column of the piranha.
     ///
     /// - Returns: The number of steps that must be taken. If the given column
-    ///   is not on the board, `-1` is returned.
-    func moveDistanceVertical(inColumn column: Int) -> Int {
+    ///   is not on the board, `nil` is returned.
+    func moveDistanceVertical(inColumn column: Int) -> Int? {
         guard column >= 0, column < SCConstants.boardSize else {
-            return -1
+            return nil
         }
 
         var count = 0
@@ -160,11 +160,11 @@ class SCGameState {
     ///   - y: The y-coordinate of the piranha.
     ///
     /// - Returns: The number of steps that must be taken. If the given x- or
-    ///   y-coordinate is not on the board, `-1` is returned.
-    func moveDistanceDiagonalRising(x: Int, y: Int) -> Int {
+    ///   y-coordinate is not on the board, `nil` is returned.
+    func moveDistanceDiagonalRising(x: Int, y: Int) -> Int? {
         guard x >= 0, x < SCConstants.boardSize,
               y >= 0, y < SCConstants.boardSize else {
-            return -1
+            return nil
         }
 
         var count = 0
@@ -188,11 +188,11 @@ class SCGameState {
     ///   - y: The y-coordinate of the piranha.
     ///
     /// - Returns: The number of steps that must be taken. If the given x- or
-    ///   y-coordinate is not on the board, `-1` is returned.
-    func moveDistanceDiagonalFalling(x: Int, y: Int) -> Int {
+    ///   y-coordinate is not on the board, `nil` is returned.
+    func moveDistanceDiagonalFalling(x: Int, y: Int) -> Int? {
         guard x >= 0, x < SCConstants.boardSize,
               y >= 0, y < SCConstants.boardSize else {
-            return -1
+            return nil
         }
 
         var count = 0
@@ -217,8 +217,8 @@ class SCGameState {
     ///   - direction: The direction for the piranha.
     ///
     /// - Returns: The number of steps that must be taken. If the given x- or
-    ///   y-coordinate is not on the board, `-1` is returned.
-    func moveDistance(x: Int, y: Int, direction: SCDirection) -> Int {
+    ///   y-coordinate is not on the board, `nil` is returned.
+    func moveDistance(x: Int, y: Int, direction: SCDirection) -> Int? {
         switch direction {
             case .left, .right:
                 return self.moveDistanceHorizontal(inRow: y)
@@ -237,8 +237,8 @@ class SCGameState {
     /// - Parameter move: The move to be performed.
     ///
     /// - Returns: The number of steps that must be taken. If the x- or
-    ///   y-coordinate of the move is not on the board, `-1` is returned.
-    func distance(forMove move: SCMove) -> Int {
+    ///   y-coordinate of the move is not on the board, `nil` is returned.
+    func distance(forMove move: SCMove) -> Int? {
         return self.moveDistance(x: move.x, y: move.y, direction: move.direction)
     }
 
@@ -311,9 +311,8 @@ class SCGameState {
         for field in self.getFields(ofPlayer: self.currentPlayer) {
             dirLoop: for dir in SCDirection.allCases {
                 let move = SCMove(x: field.x, y: field.y, direction: dir)
-                let distance = self.distance(forMove: move)
 
-                if distance > 0,
+                if let distance = self.distance(forMove: move),
                    let destField = self.destination(forMove: move, withDistance: distance) {
                     for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
                         if f.state == opponentFieldState {
@@ -345,8 +344,7 @@ class SCGameState {
             return false
         }
 
-        let distance = self.distance(forMove: move)
-        if distance > 0,
+        if let distance = self.distance(forMove: move),
            let destField = self.destination(forMove: move, withDistance: distance) {
             for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
                 if f.state == self.currentPlayer.opponentColor.fieldState {
