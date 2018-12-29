@@ -190,11 +190,11 @@ class SCSocket {
                 let length = recv(self.socketfd, &self.readBuffer, SCSocket.bufferSize, 0)
 
                 // Check whether the message is not empty.
-                if length > 0 {
-                    data.append(&self.readBuffer, count: length)
-                } else {
+                guard length > 0 else {
                     break
                 }
+
+                data.append(&self.readBuffer, count: length)
             } while self.readable
         }
     }
@@ -220,7 +220,7 @@ class SCSocket {
                     #endif
 
                     // Check whether an error occurred or nothing has been sent.
-                    if retVal <= 0 {
+                    guard retVal > 0 else {
                         break
                     }
 
