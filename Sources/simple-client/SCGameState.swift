@@ -1,5 +1,5 @@
 /// Represents the state of a game, as received from the game server.
-class SCGameState {
+class SCGameState : CustomStringConvertible {
     // MARK: - Properties
 
     /// The color of the player starting the game.
@@ -366,5 +366,29 @@ class SCGameState {
         }
 
         return false
+    }
+
+    // MARK: - CustomStringConvertible
+
+    var description: String {
+        let border = String(repeating: "─", count: 2 * SCConstants.boardSize)
+
+        let range = 0..<SCConstants.boardSize
+        let rows = range.reversed().reduce(into: "\n") { res, y in
+            res += range.reduce(into: "│ ") {
+                switch self[$1, y] {
+                    case .red:
+                        $0 += "R "
+                    case .blue:
+                        $0 += "B "
+                    case .obstructed:
+                        $0 += "X "
+                    case .empty:
+                        $0 += "- "
+                }
+            } + "│\n"
+        }
+
+        return "┌" + border + "─┐" + rows + "└" + border + "─┘"
     }
 }
