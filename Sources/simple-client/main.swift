@@ -62,40 +62,41 @@ let argv = CommandLine.arguments
 let argc = argv.count
 
 // Parse the command-line arguments.
-var i = 0
+var i = 1
 while i < argc {
-    let arg = argv[i]
+    switch argv[i] {
+        case "--help":
+            printHelpMessage()
+            exit(EXIT_SUCCESS)
+        case "--version":
+            print("\(executableName) version \(versionNumber)")
+            exit(EXIT_SUCCESS)
+        case let arg where arg.hasPrefix("-"):
+            i += 1
 
-    if arg == "--help" {
-        printHelpMessage()
-        exit(EXIT_SUCCESS)
-    } else if arg == "--version" {
-        print("\(executableName) version \(versionNumber)")
-        exit(EXIT_SUCCESS)
-    } else if arg.hasPrefix("-") {
-        i += 1
+            guard i < argc else {
+                exit(withError: "Missing value for the option \"\(arg)\"!")
+            }
 
-        guard i < argc else {
-            exit(withError: "Missing value for the option \"\(arg)\"!")
-        }
+            let argValue = argv[i]
 
-        let argValue = argv[i]
-
-        switch arg {
-            case "-h", "--host":
-                host = argValue
-            case "-p", "--port":
-                guard let portValue = UInt16(argValue) else {
-                    exit(withError: "The value \"\(argValue)\" can not be converted to a port number!")
-                }
-                port = portValue
-            case "-r", "--reservation":
-                reservation = argValue
-            case "-s", "--strategy":
-                strategy = argValue
-            default:
-                exit(withError: "Unrecognized option \"\(arg)\"!")
-        }
+            switch arg {
+                case "-h", "--host":
+                    host = argValue
+                case "-p", "--port":
+                    guard let portValue = UInt16(argValue) else {
+                        exit(withError: "The value \"\(argValue)\" can not be converted to a port number!")
+                    }
+                    port = portValue
+                case "-r", "--reservation":
+                    reservation = argValue
+                case "-s", "--strategy":
+                    strategy = argValue
+                default:
+                    exit(withError: "Unrecognized option \"\(arg)\"!")
+            }
+        case let arg:
+            exit(withError: "Unrecognized argument \"\(arg)\"!")
     }
 
     i += 1
