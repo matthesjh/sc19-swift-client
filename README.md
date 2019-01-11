@@ -95,4 +95,4 @@ switch self.strategy {
 
 ## Renaming the client
 
-If you want to change the name of the simple client, you have to adjust the target name in the [`Package.swift`](Package.swift) file and the directory name in the [`Sources`](Sources) folder. Furthermore the `EXECUTABLE_NAME` variable in the [shell scripts](scripts) and the `executableName` constant in the [`main.swift`](Sources/simple-client/main.swift) file needs to be changed.
+If you want to change the name of the simple client, you have to adjust the target name in the [`Package.swift`](Package.swift#L9) file and the directory name in the [`Sources`](Sources) folder. Furthermore the `EXECUTABLE_NAME` variable in the [shell scripts](scripts) and the `executableName` constant in the [`main.swift`](Sources/simple-client/main.swift#L10) file needs to be changed.
