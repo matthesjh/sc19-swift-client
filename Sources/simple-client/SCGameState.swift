@@ -304,15 +304,17 @@ class SCGameState : CustomStringConvertible {
 
                 if let distance = self.distance(forMove: move),
                    let destField = self.destination(forMove: move, withDistance: distance) {
+                    guard destField.state == .empty || destField.state == opponentFieldState else {
+                        continue dirLoop
+                    }
+
                     for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
                         if f.state == opponentFieldState {
                             continue dirLoop
                         }
                     }
 
-                    if destField.state == .empty || destField.state == opponentFieldState {
-                        moves.append(move)
-                    }
+                    moves.append(move)
                 }
             }
         }
@@ -336,14 +338,16 @@ class SCGameState : CustomStringConvertible {
 
         if let distance = self.distance(forMove: move),
            let destField = self.destination(forMove: move, withDistance: distance) {
-            for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
-                if f.state == self.currentPlayer.opponentColor.fieldState {
-                    return false
-                }
+            let opponentFieldState = self.currentPlayer.opponentColor.fieldState
+
+            guard destField.state == .empty || destField.state == opponentFieldState else {
+                return false
             }
 
-            if destField.state == .obstructed || destField.state == self.currentPlayer.fieldState {
-                return false
+            for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
+                if f.state == opponentFieldState {
+                    return false
+                }
             }
 
             self[x, y] = .empty
