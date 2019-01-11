@@ -23,13 +23,9 @@ class SCGameState : CustomStringConvertible {
         self.currentPlayer = startPlayer
 
         // Initialize the board with empty fields.
-        self.board = []
-        for x in 0..<SCConstants.boardSize {
-            var column = [SCField]()
-            for y in 0..<SCConstants.boardSize {
-                column.append(SCField(x: x, y: y))
-            }
-            self.board.append(column)
+        let range = 0..<SCConstants.boardSize
+        self.board = range.map { x in
+            range.map { SCField(x: x, y: $0) }
         }
     }
 
@@ -291,13 +287,7 @@ class SCGameState : CustomStringConvertible {
             return []
         }
 
-        var fields = [SCField]()
-
-        for i in 1..<distance {
-            fields.append(self.board[move.x + vx * i][move.y + vy * i])
-        }
-
-        return fields
+        return (1..<distance).map { self.board[move.x + vx * $0][move.y + vy * $0] }
     }
 
     /// Returns the possible moves of the current player.
