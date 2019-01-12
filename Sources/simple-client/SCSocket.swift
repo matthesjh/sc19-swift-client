@@ -8,16 +8,15 @@ import Glibc
 
 import Foundation
 
+#if os(macOS)
+let __FD_SETSIZE = __DARWIN_FD_SETSIZE
+#endif
+
 extension fd_set {
     // MARK: - Properties
 
-    #if os(macOS)
-    /// The maximum number of file descriptors in `fd_set`.
-    private static let setSize = Int(__DARWIN_FD_SETSIZE) / 32
-    #elseif os(Linux)
     /// The maximum number of file descriptors in `fd_set`.
     private static let setSize = Int(__FD_SETSIZE) / 32
-    #endif
 
     // MARK: - Methods
 
@@ -74,7 +73,7 @@ class SCSocket {
     /// The buffer to store the data received from the host.
     private var readBuffer: [UInt8]
     /// The low-level BSD socket used for the TCP connection.
-    private var socketfd: Int32
+    private var socketfd = invalidSocket
 
     /// Indicates whether there is some data that can be read from the socket.
     var readable: Bool {
@@ -94,7 +93,6 @@ class SCSocket {
 
     /// Creates a new TCP socket.
     init() {
-        self.socketfd = SCSocket.invalidSocket
         self.readBuffer = Array(repeating: 0, count: SCSocket.bufferSize)
     }
 
@@ -129,6 +127,8 @@ class SCSocket {
 
     /// Creates a connection to the given host via the given port.
     ///
+    /// Closes an already existing connection before creating a new one.
+    ///
     /// - Parameters:
     ///   - host: The host to connect to.
     ///   - port: The port to be used for the connection.
@@ -145,9 +145,10 @@ class SCSocket {
         self.socketfd = socket(AF_INET, Int32(SOCK_STREAM.rawValue), 0)
         #endif
 
-        // Check whether the newly created socket is invalid.
-        if self.socketfd == SCSocket.invalidSocket {
+        // Check whether the newly created socket is valid.
+        guard self.socketfd != SCSocket.invalidSocket else {
             print("ERROR: The socket could not be created successfully!")
+
             return false
         }
 
@@ -158,8 +159,9 @@ class SCSocket {
         socketAddress.sin_port = port.bigEndian
 
         // Connect to the host.
-        let retVal = withUnsafePointer(to: &socketAddress) { saiPtr -> Int32 in
-            let saPtr = UnsafeRawPointer(saiPtr).assumingMemoryBound(to: sockaddr.self)
+        let retVal: Int32 = withUnsafePointer(to: &socketAddress) {
+            let saPtr = UnsafeRawPointer($0).assumingMemoryBound(to: sockaddr.self)
+
             #if os(macOS)
             return Darwin.connect(self.socketfd, saPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
             #elseif os(Linux)
@@ -168,7 +170,7 @@ class SCSocket {
         }
 
         // Check whether an error occurred while connecting to the host.
-        if retVal == SCSocket.socketError {
+        guard retVal != SCSocket.socketError else {
             print("ERROR: The connection to \(host) via port \(port) could not be established!")
             self.close()
 
@@ -178,7 +180,7 @@ class SCSocket {
         return true
     }
 
-    /// Read data from the socket. This method blocks if no data can be read
+    /// Reads data from the socket. This method blocks if no data can be read
     /// from the socket.
     ///
     /// - Parameter data: The buffer to return the data in.
@@ -212,7 +214,7 @@ class SCSocket {
 
                 // Loop until we have sent the whole message to the host.
                 while sentLength < length {
-                    // Send the message to the host.
+                    // Send the (remaining) message to the host.
                     #if os(macOS)
                     let retVal = Darwin.send(self.socketfd, $0.advanced(by: sentLength), length - sentLength, 0)
                     #elseif os(Linux)
