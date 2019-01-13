@@ -90,7 +90,7 @@ class SCGameHandler: NSObject, XMLParserDelegate {
     /// Exits the game with the given error message.
     ///
     /// - Parameter error: The error message to print into the standard output.
-    private func exitGame(withError error: String) {
+    private func exitGame(withError error: String = "") {
         if !error.isEmpty {
             print("ERROR: \(error)")
         }
@@ -111,49 +111,48 @@ class SCGameHandler: NSObject, XMLParserDelegate {
     func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
         switch elementName {
             case "data":
-                // Get the class attribute.
-                if let classS = attributeDict["class"] {
-                    switch classS {
-                        case "result":
-                            // Leave the game.
-                            self.delegate?.onGameEnded()
-                            self.leaveGame = true
-                            parser.abortParsing()
-                        case "sc.framework.plugins.protocol.MoveRequest":
-                            // Send the move returned by the game logic.
-                            if var move = self.delegate?.onMoveRequested() {
-                                let hints = move.debugHints.reduce(into: "") { $0 += "<hint content=\"\($1)\" />" }
-                                let mv = "<data class=\"move\" x=\"\(move.x)\" y=\"\(move.y)\" direction=\"\(move.direction)\">\(hints)</data>"
-                                self.socket.send(message: "<room roomId=\"\(self.roomId!)\">\(mv)</room>")
-                            } else {
-                                self.exitGame(withError: "No move has been sent!")
-                                parser.abortParsing()
-                            }
-                        case "welcomeMessage":
-                            // Save the player color of this game client.
-                            if let color = attributeDict["color"],
-                               let playerColor = SCPlayerColor(rawValue: color.uppercased()) {
-                                self.playerColor = playerColor
-                            } else {
-                                self.exitGame(withError: "The player color of the welcome message is missing or could not be parsed!")
-                                parser.abortParsing()
-                            }
-                        default:
-                            break
-                    }
-                } else {
+                // Check whether a class attribute exists.
+                guard let classAttr = attributeDict["class"] else {
                     self.exitGame(withError: "The class attribute of the data element is missing!")
                     parser.abortParsing()
+                    break
+                }
+
+                switch classAttr {
+                    case "result":
+                        // Leave the game.
+                        self.delegate?.onGameEnded()
+                        self.exitGame()
+                        parser.abortParsing()
+                    case "sc.framework.plugins.protocol.MoveRequest":
+                        // Send the move returned by the game logic.
+                        if var move = self.delegate?.onMoveRequested() {
+                            let hints = move.debugHints.reduce(into: "") { $0 += "<hint content=\"\($1)\" />" }
+                            let mv = "<data class=\"move\" x=\"\(move.x)\" y=\"\(move.y)\" direction=\"\(move.direction)\">\(hints)</data>"
+                            self.socket.send(message: "<room roomId=\"\(self.roomId!)\">\(mv)</room>")
+                        } else {
+                            self.exitGame(withError: "No move has been sent!")
+                            parser.abortParsing()
+                        }
+                    case "welcomeMessage":
+                        // Save the player color of this game client.
+                        if let colorAttr = attributeDict["color"],
+                           let color = SCPlayerColor(rawValue: colorAttr.uppercased()) {
+                            self.playerColor = color
+                        } else {
+                            self.exitGame(withError: "The player color of the welcome message is missing or could not be parsed!")
+                            parser.abortParsing()
+                        }
+                    default:
+                        break
                 }
             case "field":
                 if !self.gameStateCreated {
                     // Update the field on the board.
-                    if let xS = attributeDict["x"],
-                       let yS = attributeDict["y"],
-                       let stateS = attributeDict["state"],
-                       let x = Int(xS),
-                       let y = Int(yS),
-                       let state = SCFieldState(rawValue: stateS) {
+                    if let xAttr = attributeDict["x"], let x = Int(xAttr),
+                       let yAttr = attributeDict["y"], let y = Int(yAttr),
+                       let stateAttr = attributeDict["state"],
+                       let state = SCFieldState(rawValue: stateAttr) {
                         self.gameState[x, y] = state
                     } else {
                         self.exitGame(withError: "A field could not be parsed!")
@@ -170,12 +169,10 @@ class SCGameHandler: NSObject, XMLParserDelegate {
                 }
             case "lastMove":
                 // Perform the last move on the game state.
-                if let xS = attributeDict["x"],
-                   let yS = attributeDict["y"],
-                   let dirS = attributeDict["direction"],
-                   let x = Int(xS),
-                   let y = Int(yS),
-                   let dir = SCDirection(rawValue: dirS) {
+                if let xAttr = attributeDict["x"], let x = Int(xAttr),
+                   let yAttr = attributeDict["y"], let y = Int(yAttr),
+                   let dirAttr = attributeDict["direction"],
+                   let dir = SCDirection(rawValue: dirAttr) {
                     if !self.gameState.performMove(move: SCMove(x: x, y: y, direction: dir)) {
                         self.exitGame(withError: "The last move could not be performed on the game state!")
                         parser.abortParsing()
@@ -187,12 +184,12 @@ class SCGameHandler: NSObject, XMLParserDelegate {
             case "left":
                 // Leave the game.
                 self.delegate?.onGameEnded()
-                self.leaveGame = true
+                self.exitGame()
             case "state":
                 // Create the initial game state and the game logic.
                 if !self.gameStateCreated {
-                    if let startPlayerColor = attributeDict["startPlayerColor"],
-                       let startPlayer = SCPlayerColor(rawValue: startPlayerColor) {
+                    if let startPlayerAttr = attributeDict["startPlayerColor"],
+                       let startPlayer = SCPlayerColor(rawValue: startPlayerAttr) {
                         self.gameState = SCGameState(startPlayer: startPlayer)
 
                         // TODO: Select the game logic based on the strategy.
