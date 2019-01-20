@@ -332,34 +332,31 @@ class SCGameState : CustomStringConvertible {
         guard self.turn < SCConstants.turnLimit,
               x >= 0, x < SCConstants.boardSize,
               y >= 0, y < SCConstants.boardSize,
-              self[x, y] == self.currentPlayer.fieldState else {
+              self[x, y] == self.currentPlayer.fieldState,
+              let distance = self.distance(forMove: move),
+              let destField = self.destination(forMove: move, withDistance: distance) else {
             return false
         }
 
-        if let distance = self.distance(forMove: move),
-           let destField = self.destination(forMove: move, withDistance: distance) {
-            let opponentFieldState = self.currentPlayer.opponentColor.fieldState
+        let opponentFieldState = self.currentPlayer.opponentColor.fieldState
 
-            guard destField.state == .empty || destField.state == opponentFieldState else {
-                return false
-            }
-
-            for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
-                if f.state == opponentFieldState {
-                    return false
-                }
-            }
-
-            self[x, y] = .empty
-            self[destField.x, destField.y] = self.currentPlayer.fieldState
-            self.turn += 1
-            self.currentPlayer.switchColor()
-            self.lastMove = move
-
-            return true
+        guard destField.state == .empty || destField.state == opponentFieldState else {
+            return false
         }
 
-        return false
+        for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
+            if f.state == opponentFieldState {
+                return false
+            }
+        }
+
+        self[x, y] = .empty
+        self[destField.x, destField.y] = self.currentPlayer.fieldState
+        self.turn += 1
+        self.currentPlayer.switchColor()
+        self.lastMove = move
+
+        return true
     }
 
     // MARK: - CustomStringConvertible
