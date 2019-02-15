@@ -56,15 +56,12 @@ func exit(withError error: String) -> Never {
     exit(EXIT_FAILURE)
 }
 
-/// The command-line arguments.
-let argv = CommandLine.arguments
-/// The number of command-line arguments.
-let argc = argv.count
+/// The iterator for the command-line arguments.
+var argvIterator = CommandLine.arguments.dropFirst().makeIterator()
 
 // Parse the command-line arguments.
-var i = 1
-while i < argc {
-    switch argv[i] {
+while let carg = argvIterator.next() {
+    switch carg {
         case "--help":
             printHelpMessage()
             exit(EXIT_SUCCESS)
@@ -72,13 +69,9 @@ while i < argc {
             print("\(executableName) version \(versionNumber)")
             exit(EXIT_SUCCESS)
         case let arg where arg.hasPrefix("-"):
-            i += 1
-
-            guard i < argc else {
+            guard let argValue = argvIterator.next() else {
                 exit(withError: "Missing value for the option \"\(arg)\"!")
             }
-
-            let argValue = argv[i]
 
             switch arg {
                 case "-h", "--host":
@@ -98,8 +91,6 @@ while i < argc {
         case let arg:
             exit(withError: "Unrecognized argument \"\(arg)\"!")
     }
-
-    i += 1
 }
 
 if host.isEmpty || host == "localhost" {
