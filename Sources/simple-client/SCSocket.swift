@@ -75,7 +75,8 @@ class SCSocket {
     /// The low-level BSD socket used for the TCP connection.
     private var socketfd = invalidSocket
 
-    /// Indicates whether there is some data that can be read from the socket.
+    /// Indicates whether there is some data that can be read from the TCP
+    /// socket.
     var readable: Bool {
         // Specify how long the select can take to complete.
         var timeout = timeval(tv_sec: 0, tv_usec: 50000)
@@ -109,6 +110,7 @@ class SCSocket {
     func close() {
         // Check whether the socket is valid.
         if self.socketfd != SCSocket.invalidSocket {
+            // Close the socket.
             #if os(macOS)
             let retVal = Darwin.close(self.socketfd)
             #elseif os(Linux)
@@ -180,11 +182,13 @@ class SCSocket {
         return true
     }
 
-    /// Reads data from the socket. This method blocks if no data can be read
-    /// from the socket.
+    /// Reads data from the TCP socket.
+    ///
+    /// This method blocks if no data can be read from the TCP socket.
     ///
     /// - Parameter data: The buffer to return the data in.
     func receive(into data: inout Data) {
+        // Check whether the socket is valid.
         if self.socketfd != SCSocket.invalidSocket {
             // Loop until we have received the whole message.
             repeat {
@@ -196,6 +200,7 @@ class SCSocket {
                     break
                 }
 
+                // Add the received part of the message to the callers buffer.
                 data.append(&self.readBuffer, count: length)
             } while self.readable
         }
@@ -205,6 +210,7 @@ class SCSocket {
     ///
     /// - Parameter message: The message to be sent to the host.
     func send(message: String) {
+        // Check whether the socket is valid.
         if self.socketfd != SCSocket.invalidSocket {
             message.withCString {
                 // The length of the message.
