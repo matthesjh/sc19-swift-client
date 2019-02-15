@@ -38,7 +38,8 @@ class SCGameHandler: NSObject, XMLParserDelegate {
     private var gameStateCreated = false
     /// Indicates whether the game loop should be left.
     private var leaveGame = false
-    /// The delegate (game logic) which handles the requests of the game server.
+    /// The delegate (game logic) which handles the requests of the game
+    /// server.
     var delegate: SCGameHandlerDelegate?
 
     // MARK: - Initializers
@@ -125,80 +126,89 @@ class SCGameHandler: NSObject, XMLParserDelegate {
                         self.exitGame()
                         parser.abortParsing()
                     case "sc.framework.plugins.protocol.MoveRequest":
-                        // Send the move returned by the game logic.
-                        if var move = self.delegate?.onMoveRequested() {
-                            let hints = move.debugHints.reduce(into: "") { $0 += "<hint content=\"\($1)\" />" }
-                            let mv = "<data class=\"move\" x=\"\(move.x)\" y=\"\(move.y)\" direction=\"\(move.direction)\">\(hints)</data>"
-                            self.socket.send(message: "<room roomId=\"\(self.roomId!)\">\(mv)</room>")
-                        } else {
+                        guard var move = self.delegate?.onMoveRequested() else {
                             self.exitGame(withError: "No move has been sent!")
                             parser.abortParsing()
+                            break
                         }
+
+                        // Send the move returned by the game logic to the
+                        // game server.
+                        let hints = move.debugHints.reduce(into: "") { $0 += "<hint content=\"\($1)\" />" }
+                        let mv = "<data class=\"move\" x=\"\(move.x)\" y=\"\(move.y)\" direction=\"\(move.direction)\">\(hints)</data>"
+                        self.socket.send(message: "<room roomId=\"\(self.roomId!)\">\(mv)</room>")
                     case "welcomeMessage":
-                        // Save the player color of this game client.
-                        if let colorAttr = attributeDict["color"],
-                           let color = SCPlayerColor(rawValue: colorAttr.uppercased()) {
-                            self.playerColor = color
-                        } else {
+                        guard let colorAttr = attributeDict["color"],
+                              let color = SCPlayerColor(rawValue: colorAttr.uppercased()) else {
                             self.exitGame(withError: "The player color of the welcome message is missing or could not be parsed!")
                             parser.abortParsing()
+                            break
                         }
+
+                        // Save the player color of this game client.
+                        self.playerColor = color
                     default:
                         break
                 }
             case "field":
                 if !self.gameStateCreated {
-                    // Update the field on the board.
-                    if let xAttr = attributeDict["x"], let x = Int(xAttr),
-                       let yAttr = attributeDict["y"], let y = Int(yAttr),
-                       let stateAttr = attributeDict["state"],
-                       let state = SCFieldState(rawValue: stateAttr) {
-                        self.gameState[x, y] = state
-                    } else {
+                    guard let xAttr = attributeDict["x"], let x = Int(xAttr),
+                          let yAttr = attributeDict["y"], let y = Int(yAttr),
+                          let stateAttr = attributeDict["state"],
+                          let state = SCFieldState(rawValue: stateAttr) else {
                         self.exitGame(withError: "A field could not be parsed!")
                         parser.abortParsing()
+                        break
                     }
+
+                    // Update the field on the board.
+                    self.gameState[x, y] = state
                 }
             case "joined":
-                // Save the room id of the game.
-                if let roomId = attributeDict["roomId"] {
-                    self.roomId = roomId
-                } else {
+                guard let roomId = attributeDict["roomId"] else {
                     self.exitGame(withError: "The room ID is missing!")
                     parser.abortParsing()
+                    break
                 }
+
+                // Save the room id of the game.
+                self.roomId = roomId
             case "lastMove":
-                // Perform the last move on the game state.
-                if let xAttr = attributeDict["x"], let x = Int(xAttr),
-                   let yAttr = attributeDict["y"], let y = Int(yAttr),
-                   let dirAttr = attributeDict["direction"],
-                   let dir = SCDirection(rawValue: dirAttr) {
-                    if !self.gameState.performMove(move: SCMove(x: x, y: y, direction: dir)) {
-                        self.exitGame(withError: "The last move could not be performed on the game state!")
-                        parser.abortParsing()
-                    }
-                } else {
+                guard let xAttr = attributeDict["x"], let x = Int(xAttr),
+                      let yAttr = attributeDict["y"], let y = Int(yAttr),
+                      let dirAttr = attributeDict["direction"],
+                      let dir = SCDirection(rawValue: dirAttr) else {
                     self.exitGame(withError: "The last move could not be parsed!")
+                    parser.abortParsing()
+                    break
+                }
+
+                // Perform the last move on the game state.
+                if !self.gameState.performMove(move: SCMove(x: x, y: y, direction: dir)) {
+                    self.exitGame(withError: "The last move could not be performed on the game state!")
                     parser.abortParsing()
                 }
             case "left":
                 // Leave the game.
                 self.delegate?.onGameEnded()
                 self.exitGame()
+                parser.abortParsing()
             case "state":
-                // Create the initial game state and the game logic.
                 if !self.gameStateCreated {
-                    if let startPlayerAttr = attributeDict["startPlayerColor"],
-                       let startPlayer = SCPlayerColor(rawValue: startPlayerAttr) {
-                        self.gameState = SCGameState(startPlayer: startPlayer)
-
-                        // TODO: Select the game logic based on the strategy.
-
-                        self.delegate = SCGameLogic(player: self.playerColor)
-                    } else {
+                    guard let startPlayerAttr = attributeDict["startPlayerColor"],
+                          let startPlayer = SCPlayerColor(rawValue: startPlayerAttr) else {
                         self.exitGame(withError: "The initial game state could not be parsed!")
                         parser.abortParsing()
+                        break
                     }
+
+                    // Create the initial game state.
+                    self.gameState = SCGameState(startPlayer: startPlayer)
+
+                    // TODO: Select the game logic based on the strategy.
+
+                    // Create the game logic.
+                    self.delegate = SCGameLogic(player: self.playerColor)
                 }
             default:
                 break
