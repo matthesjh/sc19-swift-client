@@ -1,16 +1,21 @@
 #if os(macOS)
 import Darwin
+
+let __FD_SETSIZE = __DARWIN_FD_SETSIZE
+let _close = Darwin.close
+let _connect = Darwin.connect
+let _send = Darwin.send
 #elseif os(Linux)
 import Glibc
+
+let _close = Glibc.close
+let _connect = Glibc.connect
+let _send = Glibc.send
 #else
 #error("Unsupported platform!")
 #endif
 
 import Foundation
-
-#if os(macOS)
-let __FD_SETSIZE = __DARWIN_FD_SETSIZE
-#endif
 
 extension fd_set {
     // MARK: - Properties
@@ -110,15 +115,8 @@ class SCSocket {
     func close() {
         // Check whether the socket is valid.
         if self.socketfd != SCSocket.invalidSocket {
-            // Close the socket.
-            #if os(macOS)
-            let retVal = Darwin.close(self.socketfd)
-            #elseif os(Linux)
-            let retVal = Glibc.close(self.socketfd)
-            #endif
-
             // Check whether an error occurred while closing the socket.
-            if retVal == SCSocket.socketError {
+            if _close(self.socketfd) == SCSocket.socketError {
                 print("ERROR: The socket could not be closed successfully!")
             }
 
@@ -164,11 +162,7 @@ class SCSocket {
         let retVal: Int32 = withUnsafePointer(to: &socketAddress) {
             let saPtr = UnsafeRawPointer($0).assumingMemoryBound(to: sockaddr.self)
 
-            #if os(macOS)
-            return Darwin.connect(self.socketfd, saPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
-            #elseif os(Linux)
-            return Glibc.connect(self.socketfd, saPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
-            #endif
+            return _connect(self.socketfd, saPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
         }
 
         // Check whether an error occurred while connecting to the host.
@@ -221,11 +215,7 @@ class SCSocket {
                 // Loop until we have sent the whole message to the host.
                 while sentLength < length {
                     // Send the (remaining) message to the host.
-                    #if os(macOS)
-                    let retVal = Darwin.send(self.socketfd, $0.advanced(by: sentLength), length - sentLength, 0)
-                    #elseif os(Linux)
-                    let retVal = Glibc.send(self.socketfd, $0.advanced(by: sentLength), length - sentLength, 0)
-                    #endif
+                    let retVal = _send(self.socketfd, $0.advanced(by: sentLength), length - sentLength, 0)
 
                     // Check whether an error occurred or nothing has been sent.
                     guard retVal > 0 else {
