@@ -1,5 +1,5 @@
 /// Represents the state of a game, as received from the game server.
-class SCGameState : CustomStringConvertible {
+class SCGameState: CustomStringConvertible {
     // MARK: - Properties
 
     /// The color of the player starting the game.
@@ -272,22 +272,28 @@ class SCGameState : CustomStringConvertible {
     ///   - distance: The number of steps to be taken.
     ///
     /// - Returns: The fields between the start and end field. If the distance
-    ///   is less than or equal to zero, an empty array is returned.
-    func fieldsInDirection(ofMove move: SCMove, withDistance distance: Int) -> [SCField] {
-        guard distance > 0 else {
-            return []
+    ///   is less than or equal to zero or the start or end field is not on the
+    ///   board, `nil` is returned.
+    func fieldsInDirection(ofMove move: SCMove, withDistance distance: Int) -> [SCField]? {
+        let x = move.x
+        let y = move.y
+
+        guard x >= 0, x < SCConstants.boardSize,
+              y >= 0, y < SCConstants.boardSize,
+              distance > 0 else {
+            return nil
         }
 
         let (vx, vy) = move.direction.vector
-        let fX = move.x + vx * distance
-        let fY = move.y + vy * distance
+        let fX = x + vx * distance
+        let fY = y + vy * distance
 
         guard fX >= 0, fX < SCConstants.boardSize,
               fY >= 0, fY < SCConstants.boardSize else {
-            return []
+            return nil
         }
 
-        return (1..<distance).map { self.board[move.x + vx * $0][move.y + vy * $0] }
+        return (1..<distance).map { self.board[x + vx * $0][y + vy * $0] }
     }
 
     /// Returns the possible moves of the current player.
@@ -302,20 +308,19 @@ class SCGameState : CustomStringConvertible {
             dirLoop: for dir in SCDirection.allCases {
                 let move = SCMove(x: field.x, y: field.y, direction: dir)
 
-                if let distance = self.distance(forMove: move),
-                   let destField = self.destination(forMove: move, withDistance: distance) {
-                    guard destField.state == .empty || destField.state == opponentFieldState else {
+                guard let distance = self.distance(forMove: move),
+                      let destField = self.destination(forMove: move, withDistance: distance),
+                      destField.state == .empty || destField.state == opponentFieldState else {
+                    continue dirLoop
+                }
+
+                for f in self.fieldsInDirection(ofMove: move, withDistance: distance)! {
+                    if f.state == opponentFieldState {
                         continue dirLoop
                     }
-
-                    for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
-                        if f.state == opponentFieldState {
-                            continue dirLoop
-                        }
-                    }
-
-                    moves.append(move)
                 }
+
+                moves.append(move)
             }
         }
 
@@ -329,22 +334,19 @@ class SCGameState : CustomStringConvertible {
         let x = move.x
         let y = move.y
 
+        let opponentFieldState = self.currentPlayer.opponentColor.fieldState
+
         guard self.turn < SCConstants.turnLimit,
               x >= 0, x < SCConstants.boardSize,
               y >= 0, y < SCConstants.boardSize,
               self[x, y] == self.currentPlayer.fieldState,
               let distance = self.distance(forMove: move),
-              let destField = self.destination(forMove: move, withDistance: distance) else {
+              let destField = self.destination(forMove: move, withDistance: distance),
+              destField.state == .empty || destField.state == opponentFieldState else {
             return false
         }
 
-        let opponentFieldState = self.currentPlayer.opponentColor.fieldState
-
-        guard destField.state == .empty || destField.state == opponentFieldState else {
-            return false
-        }
-
-        for f in self.fieldsInDirection(ofMove: move, withDistance: distance) {
+        for f in self.fieldsInDirection(ofMove: move, withDistance: distance)! {
             if f.state == opponentFieldState {
                 return false
             }
