@@ -101,6 +101,42 @@ class SCGameState: CustomStringConvertible {
         return self.board.flatMap { $0.filter { $0.state == player.fieldState } }
     }
 
+    /// Returns the neighbouring fields of the field with the given x- and
+    /// y-coordinate.
+    ///
+    /// - Parameters:
+    ///   - x: The x-coordinate of the field.
+    ///   - y: The y-coordinate of the field.
+    ///   - equalState: If `true`, only neighbouring fields with the same field
+    ///     state are included in the resulting array.
+    ///
+    /// - Returns: The array of neighbouring fields. If the given x- or
+    ///   y-coordinate is not on the board, `nil` is returned.
+    func getNeighboursOfField(x: Int, y: Int, equalState: Bool = false) -> [SCField]? {
+        guard x >= 0, x < SCConstants.boardSize,
+              y >= 0, y < SCConstants.boardSize else {
+            return nil
+        }
+
+        var fields = [SCField]()
+
+        for dir in SCDirection.allCases {
+            let (vx, vy) = dir.vector
+            let fX = x + vx
+            let fY = y + vy
+
+            guard fX >= 0, fX < SCConstants.boardSize,
+                  fY >= 0, fY < SCConstants.boardSize,
+                  !equalState || self.board[fX][fY].state == self[x, y] else {
+                continue
+            }
+
+            fields.append(self.board[fX][fY])
+        }
+
+        return fields
+    }
+
     /// Returns the number of steps that must be taken when moving a piranha
     /// horizontally in the given row.
     ///
