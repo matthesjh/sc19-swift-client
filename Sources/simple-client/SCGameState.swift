@@ -253,8 +253,16 @@ class SCGameState: CustomStringConvertible {
     func moveDistance(x: Int, y: Int, direction: SCDirection) -> Int? {
         switch direction {
             case .left, .right:
+                guard x >= 0, x < SCConstants.boardSize else {
+                    return nil
+                }
+
                 return self.moveDistanceHorizontal(inRow: y)
             case .down, .up:
+                guard y >= 0, y < SCConstants.boardSize else {
+                    return nil
+                }
+
                 return self.moveDistanceVertical(inColumn: x)
             case .downLeft, .upRight:
                 return self.moveDistanceDiagonalRising(x: x, y: y)
