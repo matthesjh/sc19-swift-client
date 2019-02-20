@@ -373,28 +373,24 @@ class SCGameState: CustomStringConvertible {
     ///
     /// - Returns: `true` if the move could be performed; otherwise, `false`.
     func performMove(move: SCMove) -> Bool {
-        let x = move.x
-        let y = move.y
-
         let opponentFieldState = self.currentPlayer.opponentColor.fieldState
 
         guard self.turn < SCConstants.turnLimit,
-              x >= 0, x < SCConstants.boardSize,
-              y >= 0, y < SCConstants.boardSize,
-              self[x, y] == self.currentPlayer.fieldState,
               let distance = self.distance(forMove: move),
+              self[move.x, move.y] == self.currentPlayer.fieldState,
               let destField = self.destination(forMove: move, withDistance: distance),
               destField.state == .empty || destField.state == opponentFieldState else {
             return false
         }
 
-        for f in self.fieldsInDirection(ofMove: move, withDistance: distance)! {
+        let (vx, vy) = move.direction.vector
+        for f in (1..<distance).map({ self.board[move.x + vx * $0][move.y + vy * $0] }) {
             if f.state == opponentFieldState {
                 return false
             }
         }
 
-        self[x, y] = .empty
+        self[move.x, move.y] = .empty
         self[destField.x, destField.y] = self.currentPlayer.fieldState
         self.turn += 1
         self.currentPlayer.switchColor()
