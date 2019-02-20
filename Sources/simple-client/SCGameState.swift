@@ -319,25 +319,22 @@ class SCGameState: CustomStringConvertible {
     ///   is less than or equal to zero or the start or end field is not on the
     ///   board, `nil` is returned.
     func fieldsInDirection(ofMove move: SCMove, withDistance distance: Int) -> [SCField]? {
-        let x = move.x
-        let y = move.y
-
-        guard x >= 0, x < SCConstants.boardSize,
-              y >= 0, y < SCConstants.boardSize,
+        guard move.x >= 0, move.x < SCConstants.boardSize,
+              move.y >= 0, move.y < SCConstants.boardSize,
               distance > 0 else {
             return nil
         }
 
         let (vx, vy) = move.direction.vector
-        let fX = x + vx * distance
-        let fY = y + vy * distance
+        let fX = move.x + vx * distance
+        let fY = move.y + vy * distance
 
         guard fX >= 0, fX < SCConstants.boardSize,
               fY >= 0, fY < SCConstants.boardSize else {
             return nil
         }
 
-        return (1..<distance).map { self.board[x + vx * $0][y + vy * $0] }
+        return (1..<distance).map { self.board[move.x + vx * $0][move.y + vy * $0] }
     }
 
     /// Returns the possible moves of the current player.
