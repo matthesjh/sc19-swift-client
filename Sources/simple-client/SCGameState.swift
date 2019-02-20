@@ -355,7 +355,8 @@ class SCGameState: CustomStringConvertible {
                     continue dirLoop
                 }
 
-                for f in self.fieldsInDirection(ofMove: move, withDistance: distance)! {
+                let (vx, vy) = dir.vector
+                for f in (1..<distance).map({ self.board[move.x + vx * $0][move.y + vy * $0] }) {
                     if f.state == opponentFieldState {
                         continue dirLoop
                     }
