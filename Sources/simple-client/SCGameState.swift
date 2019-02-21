@@ -110,7 +110,7 @@ class SCGameState: CustomStringConvertible {
     ///
     /// - Returns: The array of neighbouring fields. If the given x- or
     ///   y-coordinate is not on the board, `nil` is returned.
-    func getNeighboursOfField(x: Int, y: Int) -> [SCField]? {
+    func neighboursOfField(x: Int, y: Int) -> [SCField]? {
         guard x >= 0, x < SCConstants.boardSize,
               y >= 0, y < SCConstants.boardSize else {
             return nil
@@ -145,8 +145,8 @@ class SCGameState: CustomStringConvertible {
     /// - Returns: The array of neighbouring fields with the given field state.
     ///   If the given x- or y-coordinate is not on the board, `nil` is
     ///   returned.
-    func getNeighboursOfField(x: Int, y: Int, withState state: SCFieldState) -> [SCField]? {
-        return self.getNeighboursOfField(x: x, y: y)?.filter { $0.state == state }
+    func neighboursOfField(x: Int, y: Int, withState state: SCFieldState) -> [SCField]? {
+        return self.neighboursOfField(x: x, y: y)?.filter { $0.state == state }
     }
 
     /// Returns the number of steps that must be taken when moving a piranha
