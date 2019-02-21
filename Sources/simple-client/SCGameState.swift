@@ -411,6 +411,44 @@ class SCGameState: CustomStringConvertible {
         return true
     }
 
+    /// Returns the piranha swarms of the given player.
+    ///
+    /// A piranha swarm consists of fields on the board which are 8-connected
+    /// and covered by a piranha of the given player.
+    ///
+    /// - Parameter player: The color of the player to search for on the board.
+    ///
+    /// - Returns: The array of piranha swarms of the given player.
+    func swarms(ofPlayer player: SCPlayerColor) -> [[SCField]] {
+        let range = 0..<SCConstants.boardSize
+        var visited = range.map { _ in
+            range.map { _ in false }
+        }
+
+        func dfs(x: Int, y: Int) -> [SCField] {
+            visited[x][y] = true
+            var fields = [self.board[x][y]]
+
+            for field in self.neighboursOfField(x: x, y: y, withState: self[x, y])! {
+                if !visited[field.x][field.y] {
+                    fields += dfs(x: field.x, y: field.y)
+                }
+            }
+
+            return fields
+        }
+
+        var swarms = [[SCField]]()
+
+        for field in self.getFields(ofPlayer: player) {
+            if !visited[field.x][field.y] {
+                swarms.append(dfs(x: field.x, y: field.y))
+            }
+        }
+
+        return swarms
+    }
+
     // MARK: - CustomStringConvertible
 
     var description: String {
