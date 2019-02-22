@@ -414,7 +414,7 @@ class SCGameState: CustomStringConvertible {
     /// Returns the piranha swarms of the given player.
     ///
     /// A piranha swarm consists of fields on the board which are 8-connected
-    /// and covered by a piranha of the given player.
+    /// and covered by a piranha of the same player.
     ///
     /// - Parameter player: The color of the player to search for on the board.
     ///
@@ -447,6 +447,19 @@ class SCGameState: CustomStringConvertible {
         }
 
         return swarms
+    }
+
+    /// Returns the biggest piranha swarm of the given player.
+    ///
+    /// A piranha swarm consists of fields on the board which are 8-connected
+    /// and covered by a piranha of the same player.
+    ///
+    /// - Parameter player: The color of the player to search for on the board.
+    ///
+    /// - Returns: The biggest piranha swarm of the given player if one exists;
+    ///   otherwise, `nil`.
+    func biggestSwarm(ofPlayer player: SCPlayerColor) -> [SCField]? {
+        return self.swarms(ofPlayer: player).max { $0.count < $1.count }
     }
 
     // MARK: - CustomStringConvertible
