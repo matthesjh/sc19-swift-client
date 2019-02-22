@@ -1,3 +1,18 @@
+## 1.3.0 (2019-02-22)
+
+* The `fieldsInDirection(ofMove:withDistance:)` method now has an optional return type (`[SCField]?` instead of `[SCField]`)
+* Added the following methods to the `SCGameState` class
+  - `biggestSwarm(ofPlayer:)`
+  - `neighboursOfField(x:y:)`
+  - `neighboursOfField(x:y:withState:)`
+  - `swarms(ofPlayer:)`
+* Improved the following methods in the `SCGameState` class
+  - `fieldsInDirection(ofMove:withDistance:)`
+  - `moveDistance(x:y:direction:)`
+  - `performMove(move:)`
+  - `possibleMoves()`
+* Improved the documentation comments in the `SCSocket` class
+
 ## 1.2.0 (2018-12-29)
 
 * The move distance methods now have an optional return type (`Int?` instead of `Int`)
