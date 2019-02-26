@@ -84,7 +84,7 @@ class SCSocket {
     /// socket.
     var readable: Bool {
         // Specify how long the select can take to complete.
-        var timeout = timeval(tv_sec: 0, tv_usec: 50000)
+        var timeout = timeval(tv_sec: 0, tv_usec: 1000)
 
         // Create a read set with the socket.
         var readSet = fd_set()
