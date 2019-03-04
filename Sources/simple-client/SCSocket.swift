@@ -138,12 +138,28 @@ class SCSocket {
         // Close an existing connection.
         self.close()
 
-        // Create a new socket.
+        // Specify the criteria for the socket address selection.
+        var hints = addrinfo()
+        hints.ai_family = AF_INET
         #if os(macOS)
-        self.socketfd = socket(AF_INET, SOCK_STREAM, 0)
+        hints.ai_socktype = SOCK_STREAM
         #elseif os(Linux)
-        self.socketfd = socket(AF_INET, Int32(SOCK_STREAM.rawValue), 0)
+        hints.ai_socktype = Int32(SOCK_STREAM.rawValue)
         #endif
+        hints.ai_protocol = 0
+
+        // Resolve the host to an IPv4 address.
+        var addrInfoPtr: UnsafeMutablePointer<addrinfo>!
+        guard getaddrinfo(host, "\(port)", &hints, &addrInfoPtr) == 0 else {
+            print("ERROR: The host could not be resolved!")
+
+            return false
+        }
+
+        let addrInfo = addrInfoPtr.pointee
+
+        // Create a new socket.
+        self.socketfd = socket(addrInfo.ai_family, addrInfo.ai_socktype, addrInfo.ai_protocol)
 
         // Check whether the newly created socket is valid.
         guard self.socketfd != SCSocket.invalidSocket else {
@@ -152,30 +168,8 @@ class SCSocket {
             return false
         }
 
-        // Create the socket address.
-        var socketAddress = sockaddr_in()
-        socketAddress.sin_family = sa_family_t(AF_INET)
-        socketAddress.sin_port = port.bigEndian
-
-        // Resolve the hostname to an IPv4 address.
-        guard let hostent = gethostbyname(host),
-              let hostAddr = hostent.pointee.h_addr_list.pointee else {
-            print("ERROR: The hostname could not be resolved!")
-
-            return false
-        }
-
-        inet_pton(AF_INET, hostAddr, &socketAddress.sin_addr)
-
-        // Connect to the host.
-        let retVal: Int32 = withUnsafePointer(to: &socketAddress) {
-            let saPtr = UnsafeRawPointer($0).assumingMemoryBound(to: sockaddr.self)
-
-            return _connect(self.socketfd, saPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
-        }
-
-        // Check whether an error occurred while connecting to the host.
-        guard retVal != SCSocket.socketError else {
+        // Connect to the host and check whether an error occurred.
+        guard _connect(self.socketfd, addrInfo.ai_addr, addrInfo.ai_addrlen) != SCSocket.socketError else {
             print("ERROR: The connection to \(host) via port \(port) could not be established!")
             self.close()
 
