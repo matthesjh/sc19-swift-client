@@ -155,8 +155,17 @@ class SCSocket {
         // Create the socket address.
         var socketAddress = sockaddr_in()
         socketAddress.sin_family = sa_family_t(AF_INET)
-        socketAddress.sin_addr = in_addr(s_addr: inet_addr(host))
         socketAddress.sin_port = port.bigEndian
+
+        // Resolve the hostname to an IPv4 address.
+        guard let hostent = gethostbyname(host),
+              let hostAddr = hostent.pointee.h_addr_list.pointee else {
+            print("ERROR: The hostname could not be resolved!")
+
+            return false
+        }
+
+        inet_pton(AF_INET, hostAddr, &socketAddress.sin_addr)
 
         // Connect to the host.
         let retVal: Int32 = withUnsafePointer(to: &socketAddress) {
