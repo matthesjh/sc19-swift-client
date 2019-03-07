@@ -1,3 +1,9 @@
+## 1.3.1 (2019-03-07)
+
+* Adjusted the start script to correctly start the executable on the competition system
+* Improved the `connect(toHost:withPort:)` method to resolve hostnames that are not IP addresses
+* Reduced the maximum blocking time of the `readable` property in the `SCSocket` class from `50ms` to `1ms`
+
 ## 1.3.0 (2019-02-22)
 
 * The `fieldsInDirection(ofMove:withDistance:)` method now has an optional return type (`[SCField]?` instead of `[SCField]`)
