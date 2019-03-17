@@ -27,7 +27,7 @@ The simple client supports the following command-line arguments.
 ```
 Usage: simple-client [options]
   -h, --host:
-      The IP address of the host to connect to (default: 127.0.0.1).
+      The IP address or name of the host to connect to (default: 127.0.0.1).
   -p, --port:
       The port used for the connection (default: 13050).
   -r, --reservation:

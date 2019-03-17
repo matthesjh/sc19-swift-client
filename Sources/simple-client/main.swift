@@ -11,12 +11,12 @@ let executableName = "simple-client"
 /// The version number of the executable.
 let versionNumber = "1.3.1"
 
-/// The default IP address of the host to connect to.
+/// The default IP address or name of the host to connect to.
 let defaultHost = "127.0.0.1"
 /// The default port used for the connection.
 let defaultPort: UInt16 = 13050
 
-/// The IP address of the host to connect to.
+/// The IP address or name of the host to connect to.
 var host = defaultHost
 /// The port used for the connection.
 var port = defaultPort
@@ -30,7 +30,7 @@ func printHelpMessage() {
     print("""
         Usage: \(executableName) [options]
           -h, --host:
-              The IP address of the host to connect to (default: \(defaultHost)).
+              The IP address or name of the host to connect to (default: \(defaultHost)).
           -p, --port:
               The port used for the connection (default: \(defaultPort)).
           -r, --reservation:
