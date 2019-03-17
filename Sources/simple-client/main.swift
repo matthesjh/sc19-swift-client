@@ -93,10 +93,6 @@ while let carg = argvIterator.next() {
     }
 }
 
-if host.isEmpty || host == "localhost" {
-    host = defaultHost
-}
-
 // Create a TCP socket.
 let tcpSocket = SCSocket()
 
