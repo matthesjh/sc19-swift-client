@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SWIFT_VERSION=4.2.1
+SWIFT_VERSION=4.2.3
 
 if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
   echo "Downloading the Swift ${SWIFT_VERSION} toolchain..."
