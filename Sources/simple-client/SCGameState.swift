@@ -368,8 +368,8 @@ class SCGameState: CustomStringConvertible {
                 }
 
                 let (vx, vy) = dir.vector
-                for f in (1..<distance).map({ self.board[move.x + vx * $0][move.y + vy * $0] }) {
-                    if f.state == opponentFieldState {
+                for d in 1..<distance {
+                    if self[move.x + vx * d, move.y + vy * d] == opponentFieldState {
                         continue dirLoop
                     }
                 }
@@ -396,8 +396,8 @@ class SCGameState: CustomStringConvertible {
         }
 
         let (vx, vy) = move.direction.vector
-        for f in (1..<distance).map({ self.board[move.x + vx * $0][move.y + vy * $0] }) {
-            if f.state == opponentFieldState {
+        for d in 1..<distance {
+            if self[move.x + vx * d, move.y + vy * d] == opponentFieldState {
                 return false
             }
         }
