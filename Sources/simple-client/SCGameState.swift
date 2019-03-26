@@ -459,6 +459,17 @@ class SCGameState: CustomStringConvertible {
         return self.swarms(ofPlayer: player).max { $0.count < $1.count }
     }
 
+    /// Returns a Boolean value indicating whether the piranhas of the given
+    /// player are connected to a single swarm.
+    ///
+    /// - Parameter player: The color of the player to search for on the board.
+    ///
+    /// - Returns: `true` if the piranhas of the given player are connected to a
+    ///   single swarm; otherwise, `false`.
+    func isSwarmConnected(forPlayer player: SCPlayerColor) -> Bool {
+        return self.swarms(ofPlayer: player).count <= 1
+    }
+
     // MARK: - CustomStringConvertible
 
     var description: String {
