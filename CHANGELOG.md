@@ -1,3 +1,9 @@
+## 1.3.2 (2019-03-26)
+
+* Adjusted the start script to show the installed Swift version
+* Added the following methods to the `SCGameState` class
+  - `isSwarmConnected(forPlayer:)`
+
 ## 1.3.1 (2019-03-07)
 
 * Adjusted the start script to correctly start the executable on the competition system
