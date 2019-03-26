@@ -465,7 +465,7 @@ class SCGameState: CustomStringConvertible {
     // MARK: - CustomStringConvertible
 
     var description: String {
-        let border = String(repeating: "─", count: 2 * SCConstants.boardSize)
+        let border = String(repeating: "─", count: 2 * SCConstants.boardSize + 1)
 
         let range = 0..<SCConstants.boardSize
         let rows = range.reversed().reduce(into: "\n") { res, y in
@@ -483,6 +483,6 @@ class SCGameState: CustomStringConvertible {
             } + "│\n"
         }
 
-        return "┌" + border + "─┐" + rows + "└" + border + "─┘"
+        return "┌" + border + "┐" + rows + "└" + border + "┘"
     }
 }
