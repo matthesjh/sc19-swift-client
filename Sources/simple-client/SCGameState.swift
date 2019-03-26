@@ -420,10 +420,7 @@ class SCGameState: CustomStringConvertible {
     ///
     /// - Returns: The array of piranha swarms of the given player.
     func swarms(ofPlayer player: SCPlayerColor) -> [[SCField]] {
-        let range = 0..<SCConstants.boardSize
-        var visited = range.map { _ in
-            range.map { _ in false }
-        }
+        var visited = self.board.map { $0.map { _ in false } }
 
         func dfs(x: Int, y: Int) -> [SCField] {
             visited[x][y] = true
