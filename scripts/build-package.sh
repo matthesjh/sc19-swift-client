@@ -1,12 +1,15 @@
 #!/bin/sh
 
-SWIFT_VERSION=4.2.4
-
 if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-  echo "Downloading the Swift ${SWIFT_VERSION} toolchain..."
-  wget https://swift.org/builds/swift-${SWIFT_VERSION}-release/ubuntu1604/swift-${SWIFT_VERSION}-RELEASE/swift-${SWIFT_VERSION}-RELEASE-ubuntu16.04.tar.gz
-  tar xzf swift-${SWIFT_VERSION}-RELEASE-ubuntu16.04.tar.gz
-  export PATH="${TRAVIS_BUILD_DIR}"/swift-${SWIFT_VERSION}-RELEASE-ubuntu16.04/usr/bin:"${PATH}"
+  SWIFT_VERSION_NUMBER=4.2.4
+  SWIFT_PLATFORM=ubuntu16.04
+  SWIFT_BRANCH=swift-${SWIFT_VERSION_NUMBER}-release
+  SWIFT_VERSION=swift-${SWIFT_VERSION_NUMBER}-RELEASE
+
+  echo "Downloading the Swift ${SWIFT_VERSION_NUMBER} toolchain..."
+  wget https://swift.org/builds/${SWIFT_BRANCH}/${SWIFT_PLATFORM//.}/${SWIFT_VERSION}/${SWIFT_VERSION}-${SWIFT_PLATFORM}.tar.gz
+  tar xzf ${SWIFT_VERSION}-${SWIFT_PLATFORM}.tar.gz
+  export PATH="${TRAVIS_BUILD_DIR}"/${SWIFT_VERSION}-${SWIFT_PLATFORM}/usr/bin:"${PATH}"
 fi
 
 echo "Using Swift version:"
