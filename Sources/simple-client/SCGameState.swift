@@ -12,6 +12,8 @@ class SCGameState: CustomStringConvertible {
     private(set) var lastMove: SCMove?
     /// The two-dimensional array of fields representing the game board.
     private(set) var board: [[SCField]]
+    /// The stack used to revert the last move.
+    private var undoStack = [(SCMove?, SCField)]()
 
     // MARK: - Initializers
 
@@ -402,6 +404,8 @@ class SCGameState: CustomStringConvertible {
             }
         }
 
+        self.undoStack.append((self.lastMove, destField))
+
         self[move.x, move.y] = .empty
         self[destField.x, destField.y] = self.currentPlayer.fieldState
         self.turn += 1
@@ -409,6 +413,18 @@ class SCGameState: CustomStringConvertible {
         self.lastMove = move
 
         return true
+    }
+
+    /// Reverts the last move performed on the game board.
+    func undoLastMove() {
+        if let lastMove = self.lastMove,
+           let (oldLastMove, destField) = self.undoStack.popLast() {
+            self.lastMove = oldLastMove
+            self.currentPlayer.switchColor()
+            self.turn -= 1
+            self[destField.x, destField.y] = destField.state
+            self[lastMove.x, lastMove.y] = self.currentPlayer.fieldState
+        }
     }
 
     /// Returns the piranha swarms of the given player.
