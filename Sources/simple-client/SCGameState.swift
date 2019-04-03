@@ -40,6 +40,7 @@ class SCGameState: CustomStringConvertible {
         self.turn = gameState.turn
         self.lastMove = gameState.lastMove
         self.board = gameState.board
+        self.undoStack = gameState.undoStack
     }
 
     // MARK: - Subscripts
