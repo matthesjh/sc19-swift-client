@@ -119,22 +119,18 @@ class SCGameState: CustomStringConvertible {
             return nil
         }
 
-        var fields = [SCField]()
-
-        for dir in SCDirection.allCases {
-            let (vx, vy) = dir.vector
+        return SCDirection.allCases.compactMap {
+            let (vx, vy) = $0.vector
             let fX = x + vx
             let fY = y + vy
 
             guard fX >= 0, fX < SCConstants.boardSize,
                   fY >= 0, fY < SCConstants.boardSize else {
-                continue
+                return nil
             }
 
-            fields.append(self.board[fX][fY])
+            return self.board[fX][fY]
         }
-
-        return fields
     }
 
     /// Returns the neighbouring fields of the field with the given x- and
@@ -452,15 +448,9 @@ class SCGameState: CustomStringConvertible {
             return fields
         }
 
-        var swarms = [[SCField]]()
-
-        for field in self.getFields(ofPlayer: player) {
-            if !visited[field.x][field.y] {
-                swarms.append(dfs(x: field.x, y: field.y))
-            }
+        return self.getFields(ofPlayer: player).compactMap {
+            visited[$0.x][$0.y] ? nil : dfs(x: $0.x, y: $0.y)
         }
-
-        return swarms
     }
 
     /// Returns the biggest piranha swarm of the given player.
