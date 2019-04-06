@@ -1,3 +1,8 @@
+## 1.3.3 (2019-04-07)
+
+* Added the following methods to the `SCGameState` class
+  - `undoLastMove()`
+
 ## 1.3.2 (2019-03-26)
 
 * Adjusted the start script to show the installed Swift version
