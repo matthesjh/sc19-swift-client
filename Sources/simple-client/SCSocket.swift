@@ -185,48 +185,42 @@ class SCSocket {
     ///
     /// - Parameter data: The buffer to return the data in.
     func receive(into data: inout Data) {
-        // Check whether the socket is valid.
-        if self.socketfd != SCSocket.invalidSocket {
-            // Loop until we have received the whole message.
-            repeat {
-                // Add the received part of the message to the internal buffer.
-                let length = recv(self.socketfd, &self.readBuffer, SCSocket.bufferSize, 0)
+        // Loop until we have received the whole message.
+        repeat {
+            // Add the received part of the message to the internal buffer.
+            let length = recv(self.socketfd, &self.readBuffer, SCSocket.bufferSize, 0)
 
-                // Check whether the message is not empty.
-                guard length > 0 else {
-                    break
-                }
+            // Check whether the message is not empty.
+            guard length > 0 else {
+                break
+            }
 
-                // Add the received part of the message to the callers buffer.
-                data.append(&self.readBuffer, count: length)
-            } while self.readable
-        }
+            // Add the received part of the message to the callers buffer.
+            data.append(&self.readBuffer, count: length)
+        } while self.readable
     }
 
     /// Sends the given message to the host.
     ///
     /// - Parameter message: The message to be sent to the host.
     func send(message: String) {
-        // Check whether the socket is valid.
-        if self.socketfd != SCSocket.invalidSocket {
-            message.withCString {
-                // The length of the message.
-                let length = message.count
-                // The length of the message that is already sent to the host.
-                var sentLength = 0
+        message.withCString {
+            // The length of the message.
+            let length = message.count
+            // The length of the message that is already sent to the host.
+            var sentLength = 0
 
-                // Loop until we have sent the whole message to the host.
-                while sentLength < length {
-                    // Send the (remaining) message to the host.
-                    let retVal = _send(self.socketfd, $0.advanced(by: sentLength), length - sentLength, 0)
+            // Loop until we have sent the whole message to the host.
+            while sentLength < length {
+                // Send the (remaining) message to the host.
+                let retVal = _send(self.socketfd, $0.advanced(by: sentLength), length - sentLength, 0)
 
-                    // Check whether an error occurred or nothing has been sent.
-                    guard retVal > 0 else {
-                        break
-                    }
-
-                    sentLength += retVal
+                // Check whether an error occurred or nothing has been sent.
+                guard retVal > 0 else {
+                    break
                 }
+
+                sentLength += retVal
             }
         }
     }
