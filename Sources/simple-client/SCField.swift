@@ -36,6 +36,17 @@ struct SCField {
         return self.state == .red || self.state == .blue
     }
 
+    /// Returns a Boolean value indicating whether the field is covered by a
+    /// piranha of the given player.
+    ///
+    /// - Parameter player: The color of the player.
+    ///
+    /// - Returns: `true` if the field is covered by a piranha of the given
+    ///   player; otherwise, `false`.
+    func hasPiranha(ofPlayer player: SCPlayerColor) -> Bool {
+        return self.state == player.fieldState
+    }
+
     /// Returns a Boolean value indicating whether the field is empty.
     ///
     /// - Returns: `true` if the field is empty; otherwise, `false`.
