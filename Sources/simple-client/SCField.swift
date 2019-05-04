@@ -60,4 +60,17 @@ struct SCField {
     func isObstructed() -> Bool {
         return self.state == .obstructed
     }
+
+    /// Returns a Boolean value indicating whether the field can be skipped by
+    /// the player with the given color.
+    ///
+    /// A player can skip a field if it is not covered by a piranha of the
+    /// opponent player.
+    ///
+    /// - Parameter player: The color of the player who wants to skip the field.
+    ///
+    /// - Returns: `true` if the field can be skipped; otherwise, `false`.
+    func isSkippable(byPlayer player: SCPlayerColor) -> Bool {
+        return self.state != player.opponentColor.fieldState
+    }
 }
