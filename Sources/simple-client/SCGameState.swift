@@ -101,7 +101,7 @@ class SCGameState: CustomStringConvertible {
     ///
     /// - Returns: The array of fields covered by a piranha of the given player.
     func getFields(ofPlayer player: SCPlayerColor) -> [SCField] {
-        return self.board.flatMap { $0.filter { $0.state == player.fieldState } }
+        return self.board.flatMap { $0.filter { $0.hasPiranha(ofPlayer: player) } }
     }
 
     /// Returns the neighbouring fields of the field with the given x- and
@@ -160,15 +160,7 @@ class SCGameState: CustomStringConvertible {
             return nil
         }
 
-        var count = 0
-
-        for i in 0..<SCConstants.boardSize {
-            if self.board[i][row].hasPiranha() {
-                count += 1
-            }
-        }
-
-        return count
+        return (0..<SCConstants.boardSize).count { self.board[$0][row].hasPiranha() }
     }
 
     /// Returns the number of steps that must be taken when moving a piranha
@@ -183,15 +175,7 @@ class SCGameState: CustomStringConvertible {
             return nil
         }
 
-        var count = 0
-
-        for i in 0..<SCConstants.boardSize {
-            if self.board[column][i].hasPiranha() {
-                count += 1
-            }
-        }
-
-        return count
+        return (0..<SCConstants.boardSize).count { self.board[column][$0].hasPiranha() }
     }
 
     /// Returns the number of steps that must be taken when moving a piranha
@@ -210,16 +194,9 @@ class SCGameState: CustomStringConvertible {
             return nil
         }
 
-        var count = 0
-
         let (min, max) = x < y ? (x, y) : (y, x)
-        for i in min * -1 ..< SCConstants.boardSize - max {
-            if self.board[x + i][y + i].hasPiranha() {
-                count += 1
-            }
-        }
 
-        return count
+        return (min * -1 ..< SCConstants.boardSize - max).count { self.board[x + $0][y + $0].hasPiranha() }
     }
 
     /// Returns the number of steps that must be taken when moving a piranha
@@ -238,17 +215,10 @@ class SCGameState: CustomStringConvertible {
             return nil
         }
 
-        var count = 0
-
         let lower = min(x, SCConstants.boardSize - 1 - y) * -1
         let upper = min(SCConstants.boardSize - 1 - x, y)
-        for i in lower...upper {
-            if self.board[x + i][y - i].hasPiranha() {
-                count += 1
-            }
-        }
 
-        return count
+        return (lower...upper).count { self.board[x + $0][y - $0].hasPiranha() }
     }
 
     /// Returns the number of steps that must be taken when moving a piranha
@@ -352,53 +322,36 @@ class SCGameState: CustomStringConvertible {
     ///
     /// - Returns: The array of possible moves.
     func possibleMoves() -> [SCMove] {
-        var moves = [SCMove]()
-
-        let opponentFieldState = self.currentPlayer.opponentColor.fieldState
-
-        for field in self.getFields(ofPlayer: self.currentPlayer) {
-            dirLoop: for dir in SCDirection.allCases {
-                let move = SCMove(x: field.x, y: field.y, direction: dir)
+        return self.getFields(ofPlayer: self.currentPlayer).flatMap { field in
+            SCDirection.allCases.compactMap {
+                let move = SCMove(x: field.x, y: field.y, direction: $0)
+                let (vx, vy) = $0.vector
 
                 guard let distance = self.distance(forMove: move),
                       let destField = self.destination(forMove: move, withDistance: distance),
-                      destField.state == .empty || destField.state == opponentFieldState else {
-                    continue dirLoop
+                      destField.isCoverable(byPlayer: self.currentPlayer),
+                      (1..<distance).allSatisfy({ self.board[move.x + vx * $0][move.y + vy * $0].isSkippable(byPlayer: self.currentPlayer) }) else {
+                    return nil
                 }
 
-                let (vx, vy) = dir.vector
-                for d in 1..<distance {
-                    if self[move.x + vx * d, move.y + vy * d] == opponentFieldState {
-                        continue dirLoop
-                    }
-                }
-
-                moves.append(move)
+                return move
             }
         }
-
-        return moves
     }
 
     /// Performs the given move on the game board.
     ///
     /// - Returns: `true` if the move could be performed; otherwise, `false`.
     func performMove(move: SCMove) -> Bool {
-        let opponentFieldState = self.currentPlayer.opponentColor.fieldState
+        let (vx, vy) = move.direction.vector
 
         guard self.turn < SCConstants.turnLimit,
               let distance = self.distance(forMove: move),
-              self[move.x, move.y] == self.currentPlayer.fieldState,
+              self.board[move.x][move.y].hasPiranha(ofPlayer: self.currentPlayer),
               let destField = self.destination(forMove: move, withDistance: distance),
-              destField.state == .empty || destField.state == opponentFieldState else {
+              destField.isCoverable(byPlayer: self.currentPlayer),
+              (1..<distance).allSatisfy({ self.board[move.x + vx * $0][move.y + vy * $0].isSkippable(byPlayer: self.currentPlayer) }) else {
             return false
-        }
-
-        let (vx, vy) = move.direction.vector
-        for d in 1..<distance {
-            if self[move.x + vx * d, move.y + vy * d] == opponentFieldState {
-                return false
-            }
         }
 
         self.undoStack.append((self.lastMove, destField))
