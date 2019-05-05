@@ -73,4 +73,15 @@ struct SCField {
     func isSkippable(byPlayer player: SCPlayerColor) -> Bool {
         return self.state != player.opponentColor.fieldState
     }
+
+    /// Returns a Boolean value indicating whether the field can be covered with
+    /// a piranha of the given player.
+    ///
+    /// - Parameter player: The color of the player who wants to cover the field
+    ///   with a piranha.
+    ///
+    /// - Returns: `true` if the field can be covered; otherwise, `false`.
+    func isCoverable(byPlayer player: SCPlayerColor) -> Bool {
+        return self.state == .empty || self.state == player.opponentColor.fieldState
+    }
 }
