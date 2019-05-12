@@ -1,3 +1,11 @@
+## 1.4.0 (2019-05-12)
+
+* Refactored some methods in the `SCGameState` class
+* Added the following methods to the `SCField` class
+  - `hasPiranha(ofPlayer:)`
+  - `isCoverable(byPlayer:)`
+  - `isSkippable(byPlayer:)`
+
 ## 1.3.3 (2019-04-07)
 
 * Added the following methods to the `SCGameState` class
