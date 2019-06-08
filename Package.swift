@@ -4,9 +4,8 @@ import PackageDescription
 
 let package = Package(
     name: "sc19-swift-client",
-    dependencies: [],
     targets: [
-        .target(name: "simple-client", dependencies: [])
+        .target(name: "simple-client")
     ],
     swiftLanguageVersions: [.v4_2]
 )
