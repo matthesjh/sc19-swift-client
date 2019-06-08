@@ -101,8 +101,7 @@ if tcpSocket.connect(toHost: host, withPort: port) {
     print("Connected to the game server!")
 
     // Handle the game and the communication with the game server.
-    let gameHandler = SCGameHandler(socket: tcpSocket, reservation: reservation, strategy: strategy)
-    gameHandler.handleGame()
+    SCGameHandler(socket: tcpSocket, reservation: reservation, strategy: strategy).handleGame()
 }
 
 // Close the socket and the connection with the game server.
