@@ -22,6 +22,10 @@ class SCGameLogic: SCGameHandlerDelegate {
         print("*** The game has been ended!")
     }
 
+    func onGameResultReceived(_ gameResult: SCGameResult) {
+        print("*** The game result has been received!")
+    }
+
     func onGameStateUpdated(_ gameState: SCGameState) {
         print("*** The game state has been updated!")
         self.gameState = gameState

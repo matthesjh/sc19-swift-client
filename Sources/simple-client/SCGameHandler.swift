@@ -5,6 +5,11 @@ protocol SCGameHandlerDelegate {
     /// Sent by the game handler when the game has been ended.
     func onGameEnded()
 
+    /// Sent by the game handler when the game result has been received.
+    ///
+    /// - Parameter gameResult: The final result of the game.
+    func onGameResultReceived(_ gameResult: SCGameResult)
+
     /// Sent by the game handler when the game state has been updated.
     ///
     /// - Parameter gameState: The new game state.
