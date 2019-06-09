@@ -7,7 +7,7 @@ struct SCScore {
     /// The textual representation of the score reason.
     let reason: String?
     /// The values associated with the score.
-    lazy var values = [Float]()
+    lazy var values = [String]()
 
     // MARK: - Initializers
 
