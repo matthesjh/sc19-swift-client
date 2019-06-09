@@ -1,3 +1,9 @@
+## 1.5.0 (2019-06-09)
+
+* A game logic can now access the game result received from the game server
+* Added the following methods to the `SCGameHandlerDelegate` protocol
+  - `onGameResultReceived(_:)`
+
 ## 1.4.0 (2019-05-12)
 
 * Refactored some methods in the `SCGameState` class
