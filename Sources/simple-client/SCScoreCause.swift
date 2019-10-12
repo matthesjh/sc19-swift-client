@@ -1,6 +1,6 @@
 /// The reason for the score of a player.
 enum SCScoreCause: String, CaseIterable, CustomStringConvertible {
-    /// The player didn't violate against game the rules or left the game early.
+    /// The player didn't violate against the game rules or left the game early.
     case regular = "REGULAR"
     /// The player left the game early (connection loss).
     case left = "LEFT"
