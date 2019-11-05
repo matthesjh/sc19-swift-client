@@ -4,6 +4,8 @@ struct SCConstants {
 
     /// The size of the game board.
     static let boardSize = 10
+    /// The game identifier used in the communication with the game server.
+    static let gameIdentifier = "swc_2019_piranhas"
     /// The maximum number of piranhas per player.
     static let maxNumberOfPiranhas = (boardSize - 2) * 2
     /// The maximum number of rounds per game.

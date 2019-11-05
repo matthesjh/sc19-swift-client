@@ -83,7 +83,7 @@ class SCGameHandler: NSObject, XMLParserDelegate {
     func handleGame() {
         if self.reservation.isEmpty {
             // Join a game.
-            self.socket.send(message: "<protocol><join gameType=\"swc_2019_piranhas\" />")
+            self.socket.send(message: "<protocol><join gameType=\"\(SCConstants.gameIdentifier)\" />")
         } else {
             // Join a prepared game.
             self.socket.send(message: "<protocol><joinPrepared reservationCode=\"\(self.reservation)\" />")
