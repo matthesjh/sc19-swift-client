@@ -1,11 +1,11 @@
-matrix:
+jobs:
   include:
     - os: linux
       dist: xenial
       language: generic
     - os: osx
-      language: swift
       osx_image: xcode10.1
+      language: swift
 
 script:
   - chmod u+x scripts/build-package.sh
