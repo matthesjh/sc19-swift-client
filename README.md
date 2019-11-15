@@ -53,7 +53,7 @@ scripts/zip-client.sh
 
 The resulting archive (`simple-client.zip`) can then be uploaded to the competition system. Please make sure that you select the start script (`start-client.sh`) as the main file in the uploading process.
 
-**Note:** The above script (`zip-client.sh`) builds the client with the `release` configuration and calls the Swift compiler with the `-O` flag to optimize the executable for speed.
+**Note:** The above script ([`zip-client.sh`](scripts/zip-client.sh)) builds the client with the `release` configuration and calls the Swift compiler with the `-O` flag to optimize the executable for speed.
 
 ## Customizing the logic
 
