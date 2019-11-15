@@ -9,7 +9,7 @@ import Glibc
 /// The name of the executable.
 let executableName = "simple-client"
 /// The version number of the executable.
-let versionNumber = "1.5.0"
+let versionNumber = "1.6.0"
 
 /// The default IP address or name of the host to connect to.
 let defaultHost = "127.0.0.1"

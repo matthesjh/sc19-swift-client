@@ -1,3 +1,11 @@
+## 1.6.0 (2019-11-15)
+
+* Added the following properties to the `SCGameState` class
+  - `round`
+* Added the following constants to the `SCConstants` class
+  - `gameIdentifier`
+* Fixed a typo in the `SCScoreCause` documentation comments
+
 ## 1.5.0 (2019-06-09)
 
 * A game logic can now access the game result received from the game server
