@@ -15,6 +15,11 @@ class SCGameState: CustomStringConvertible {
     /// The stack used to revert the last move.
     private var undoStack = [(SCMove?, SCField)]()
 
+    /// The current round number.
+    var round: Int {
+        self.turn / 2 + 1
+    }
+
     // MARK: - Initializers
 
     /// Creates a new game state with the given start player.
