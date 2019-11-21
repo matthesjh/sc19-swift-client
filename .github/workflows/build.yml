@@ -1,0 +1,20 @@
+name: Build package
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: macOS-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Build
+        run: |
+          chmod u+x scripts/build-package.sh
+          scripts/build-package.sh
