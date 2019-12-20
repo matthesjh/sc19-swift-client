@@ -98,3 +98,11 @@ switch self.strategy {
 ## Renaming the client
 
 If you want to change the name of the simple client, you have to adjust the target name in the [`Package.swift`](Package.swift#L8) file and the directory name in the [`Sources`](Sources) folder. Furthermore the `EXECUTABLE_NAME` variable in the [shell scripts](scripts) and the `executableName` constant in the [`main.swift`](Sources/simple-client/main.swift#L10) file needs to be changed.
+
+## Troubleshooting
+
+Should you encounter an error or unexpected behavior while using the simple client, you may be able to resolve the problem by following the advice below.
+
+- **Increase the TCP socket timeout:** On some systems the current socket timeout of `1ms` results in fatal errors before sending the first move. To prevent this, you can increase the [socket timeout](Sources/simple-client/SCSocket.swift#L87) to a higher value. Any value greater than or equal to `5000` (which corresponds to `5ms`) should resolve the problem on most systems.
+
+If none of these tips help and you feel that you have encountered a bug, feel free to open an issue. Please describe your problem as accurately as you can and include steps to reproduce the error if possible. Note that a GitHub account is required to create a new issue. You can also instruct your tutor to do it for you.
