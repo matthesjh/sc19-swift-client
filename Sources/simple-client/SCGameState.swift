@@ -106,7 +106,23 @@ class SCGameState: CustomStringConvertible {
     ///
     /// - Returns: The array of fields covered by a piranha of the given player.
     func getFields(ofPlayer player: SCPlayerColor) -> [SCField] {
-        return self.board.flatMap { $0.filter { $0.hasPiranha(ofPlayer: player) } }
+        return self.board.joined().filter { $0.hasPiranha(ofPlayer: player) }
+    }
+
+    /// Returns the fields with the given field state.
+    ///
+    /// - Parameter state: The field state to search for on the game board.
+    ///
+    /// - Returns: The array of fields with the given field state.
+    func getFields(withState state: SCFieldState) -> [SCField] {
+        return self.board.joined().filter { $0.state == state }
+    }
+
+    /// Returns the fields that are obstructed with an octopus.
+    ///
+    /// - Returns: The array of fields that are obstructed with an octopus.
+    func obstructedFields() -> [SCField] {
+        return self.board.joined().filter { $0.isObstructed() }
     }
 
     /// Returns the neighbouring fields of the field with the given x- and
