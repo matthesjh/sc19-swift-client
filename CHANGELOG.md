@@ -1,3 +1,9 @@
+## 1.7.0 (2020-02-23)
+
+* Added the following methods to the `SCGameState` class
+  - `getFields(withState:)`
+  - `obstructedFields()`
+
 ## 1.6.0 (2019-11-15)
 
 * Added the following properties to the `SCGameState` class
