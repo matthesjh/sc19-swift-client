@@ -1,6 +1,5 @@
 # Swift client for Software-Challenge Germany 2018/2019
 
-[![Build Status](https://travis-ci.com/matthesjh/sc19-swift-client.svg?branch=master)](https://travis-ci.com/matthesjh/sc19-swift-client)
 ![Build package](https://github.com/matthesjh/sc19-swift-client/workflows/Build%20package/badge.svg)
 [![Swift](https://img.shields.io/badge/swift-%3E%3D%204.2.1-brightgreen.svg?logo=swift)](https://swift.org/)
 ![Supported Platforms](https://img.shields.io/badge/platform-macOS%20%7C%20linux-lightgrey.svg)
